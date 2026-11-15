@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genetic Engineering: The Pioneers — Interactive Timeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body, #root {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #050507;
+      color: #F5F5F7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+    h1, h2, h3, .font-display {
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+    }
+    .selectable-text {
+      user-select: text;
+    }
+    /* Custom scrollbar for drawers and modals */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0b0f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(34, 211, 238, 0.45);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+    const ERAS = [
+      {
+        id: 'foundations',
+        name: 'Foundations of Genetics',
+        shortName: 'Foundations',
+        period: '1865–1960s',
+        color: '#22d3ee',
+        glow: 'rgba(34, 211, 238, 0.28)',
+        description: 'Laws of inheritance, DNA as the transforming principle, and the double helix.'
+      },
+      {
+        id: 'recombinant',
+        name: 'Birth of Genetic Engineering',
+        shortName: 'Recombinant DNA',
+        period: '1960s–1970s',
+        color: '#3b82f6',
+        glow: 'rgba(59, 130, 246, 0.28)',
+        description: 'Restriction enzymes, recombinant DNA molecules, plasmid cloning, and Asilomar biosafety.'
+      },
+      {
+        id: 'biotech',
+        name: 'New Genetic Engineering Technologies',
+        shortName: 'Biotechnology',
+        period: '1977–1990s',
+        color: '#a855f7',
+        glow: 'rgba(168, 85, 247, 0.28)',
+        description: 'DNA sequencing, recombinant human insulin, transgenic plants, PCR, and early gene therapy.'
+      },
+      {
+        id: 'crispr',
+        name: 'The Genome Editing Revolution',
+        shortName: 'Genome Editing',
+        period: '2000s–2010s',
+        color: '#ec4899',
+        glow: 'rgba(236, 72, 153, 0.28)',
+        description: 'CRISPR bacterial immunity, programmable Cas9, base editing, and prime editing.'
+      },
+      {
+        id: 'modern',
+        name: 'Modern Applications',
+        shortName: 'Modern Applications',
+        period: '2020s & Beyond',
+        color: '#f59e0b',
+        glow: 'rgba(245, 158, 11, 0.28)',
+        description: 'CRISPR therapies, agricultural resilience, clinical precision, and global governance.'
+      }
+    ];
+
+    const MILESTONES = [
+      {
+        id: 'mendel-1865',
+        year: '1865–1866',
+        title: 'Gregor Mendel & Laws of Inheritance',
+        pioneers: ['Gregor Mendel'],
+        monogram: 'GM',
+        eraId: 'foundations',
+        x: 260,
+        position: 'top',
+        shortDesc: 'Discovered dominant and recessive hereditary factors through pea-plant breeding experiments.',
+        mechanismType: 'inheritance',
+        identity: {
+          fullName: 'Gregor Johann Mendel',
+          lifespan: '1822–1884',
+          nationality: 'Austrian (Moravian)',
+          role: 'Augustinian friar, botanist, and pioneer of classical genetics',
+          institutions: ['St. Thomas Abbey (Brno)']
+        },
+        biography: 'Born to a farming family in Heinzendorf (now Hynčice, Czech Republic), Gregor Mendel entered the Augustinian St. Thomas Abbey in Brno, gaining access to libraries and experimental gardens. After studying physics, mathematics, and botany at the University of Vienna, he conducted systematic hybridization experiments on roughly 28,000 pea plants (Pisum sativum) between 1856 and 1863. Publishing his findings in 1866, Mendel faced decades of relative obscurity before his laws of segregation and independent assortment were recognized around 1900 as the mathematical foundation of heredity.',
+        contribution: 'Mendel demonstrated that traits are transmitted across generations as discrete hereditary units (later termed genes) rather than blending smoothly. By tracking contrasting traits such as seed shape and flower color across filial generations, he established dominant and recessive relationships and predictable phenotypic ratios such as 3:1 in F2 crosses.',
+        howItWorked: 'Mendel crossed true-breeding pea varieties, observed that one trait often masked another in the F1 generation, and then self-fertilized F1 hybrids to uncover hidden recessive traits in predictable ratios. This revealed that each parent contributes one allele per trait independently during gamete formation.',
+        importance: 'Before genetic engineering could cut, copy, or edit specific genes, scientists needed to know that heredity follows discrete, trackable rules. Mendel’s quantitative framework turned breeding from guesswork into predictive genetics and informed later chromosomal and molecular models of inheritance.',
+        additionalInfo: {
+          awards: ['Posthumous recognition as founder of classical genetics (circa 1900)'],
+          publications: ['"Versuche über Pflanzen-Hybriden" (Experiments on Plant Hybridization, 1866)'],
+          collaborators: ['Brno Natural History Society peers'],
+          controversies: ['His 1866 paper went largely uncited for over three decades; later statistical debates examined how closely his counts matched ideal ratios.'],
+          connections: ['Preceded chromosomal theory of inheritance and molecular identification of DNA.']
+        },
+        sources: [
+          { label: 'NHGRI — Gregor Mendel Overview', url: 'https://www.genome.gov/' },
+          { label: 'Smithsonian Institution Archives', url: 'https://www.si.edu/' }
+        ]
+      },
+      {
+        id: 'avery-1944',
+        year: '1944',
+        title: 'DNA as the Transforming Principle',
+        pioneers: ['Oswald Avery', 'Colin MacLeod', 'Maclyn McCarty'],
+        monogram: 'AMM',
+        eraId: 'foundations',
+        x: 640,
+        position: 'bottom',
+        shortDesc: 'Showed that purified DNA—not protein—carries heritable transforming instructions in bacteria.',
+        mechanismType: 'transformation',
+        identity: {
+          fullName: 'Oswald T. Avery, Colin M. MacLeod, and Maclyn McCarty',
+          lifespan: 'Avery (1877–1955), MacLeod (1909–1972), McCarty (1911–2005)',
+          nationality: 'Canadian-American, Canadian, and American',
+          role: 'Immunochemists and geneticists',
+          institutions: ['Rockefeller Institute for Medical Research']
+        },
+        biography: 'Building on Fred Griffith’s 1928 bacterial transformation experiments in Streptococcus pneumoniae, Oswald Avery led a meticulous biochemical team at the Rockefeller Institute alongside Colin MacLeod and Maclyn McCarty. Avery brought decades of discipline studying pneumococcal polysaccharides, while MacLeod and McCarty helped purify and enzymatically test extracts from heat-killed virulent bacteria. Working amid wartime constraints in the early 1940s, the team isolated deoxyribonucleic acid capable of stably transforming non-virulent cells into encapsulated forms, challenging the prevailing assumption that proteins carried genetic specificity.',
+        contribution: 'The team identified DNA as the chemical substance responsible for bacterial transformation. Treating active extracts with protein- or RNA-degrading enzymes did not abolish transforming activity, whereas deoxyribonuclease eliminated it, pointing directly to DNA as genetic material.',
+        howItWorked: 'Heat-killed virulent pneumococcal cells were fractionated to purify their transforming factor. When mixed with live non-virulent cells, the recipient bacteria permanently inherited the ability to build a polysaccharide capsule, demonstrating that heritable information is chemically encoded in DNA.',
+        importance: 'Genetic engineering is fundamentally the deliberate manipulation of DNA. Proving that DNA itself encodes heritable traits gave molecular biologists a concrete molecule to isolate, sequence, splice, and recombine.',
+        additionalInfo: {
+          awards: ['Albert Lasker Basic Medical Research Award (Avery, 1947)', 'Copley Medal (Avery, 1945)'],
+          publications: ['"Studies on the Chemical Nature of the Substance Inducing Transformation of Pneumococcal Types" (Journal of Experimental Medicine, 1944)'],
+          collaborators: ['Fred Griffith (prior transformation observation)', 'Rollin Hotchkiss'],
+          controversies: ['Many researchers initially hesitated to accept DNA over complex proteins until the 1952 Hershey–Chase experiment reinforced the conclusion.'],
+          connections: ['Built on Mendel’s inheritance concepts and paved the way for solving DNA’s 3D structure.']
+        },
+        sources: [
+          { label: 'NIH / PubMed — Avery, MacLeod & McCarty (1944)', url: 'https://pubmed.ncbi.nlm.nih.gov/' },
+          { label: 'NHGRI — Historical Milestones', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'dna-helix-1953',
+        year: '1952–1953',
+        title: 'Double-Helical Structure of DNA',
+        pioneers: ['Rosalind Franklin', 'James Watson', 'Francis Crick', 'Maurice Wilkins'],
+        monogram: 'FWCC',
+        eraId: 'foundations',
+        x: 1020,
+        position: 'top',
+        shortDesc: 'X-ray diffraction data and molecular modeling revealed DNA’s antiparallel double helix and base pairing.',
+        mechanismType: 'helix',
+        identity: {
+          fullName: 'Rosalind Franklin, James D. Watson, Francis Crick, and Maurice Wilkins',
+          lifespan: 'Franklin (1920–1958), Watson (b. 1928), Crick (1916–2004), Wilkins (1916–2004)',
+          nationality: 'British and American',
+          role: 'Physical chemist/X-ray crystallographer, molecular biologists, and biophysicist',
+          institutions: ['King’s College London', 'Cavendish Laboratory, Cambridge']
+        },
+        biography: 'At King’s College London, Rosalind Franklin applied refined X-ray diffraction techniques to hydrated DNA fibers, producing sharp diffraction patterns—famously including Photo 51—and determining key structural parameters of the B-form molecule alongside Maurice Wilkins and Raymond Gosling. Meanwhile at Cambridge, James Watson and Francis Crick combined stereochemical model building with base-pairing insights (including Erwin Chargaff’s base ratios) to propose the double-helix structure in 1953. Franklin died of ovarian cancer at age 37 before Nobel prizes were awarded in 1962 to Watson, Crick, and Wilkins.',
+        contribution: 'The double-helix model showed two sugar-phosphate backbones winding around a central axis with complementary nitrogenous bases—adenine pairing with thymine (A–T) and guanine pairing with cytosine (G–C)—held together by hydrogen bonds.',
+        howItWorked: 'X-ray diffraction angles and intensities measured helical pitch, strand spacing, and symmetry, while physical molecular models tested bond geometry and base complementarity. Complementary base pairing immediately suggested a copying mechanism where each strand templates a new partner strand.',
+        importance: 'Understanding base complementarity unlocked how DNA replicates, how sequence encodes information, and how synthetic oligonucleotides, primers, and guide RNAs can target exact sequences in modern genetic engineering.',
+        additionalInfo: {
+          awards: ['Nobel Prize in Physiology or Medicine (1962 — Watson, Crick, and Wilkins)'],
+          publications: ['Watson & Crick (Nature, 1953)', 'Franklin & Gosling (Nature, 1953)', 'Wilkins, Stokes & Wilson (Nature, 1953)'],
+          collaborators: ['Raymond Gosling', 'Erwin Chargaff'],
+          controversies: ['Franklin’s X-ray data and Photo 51 were shared with Watson and Crick without her direct knowledge, prompting longstanding discussion over attribution and recognition.'],
+          connections: ['Completed the foundational molecular picture of heredity and enabled recombinant DNA design.']
+        },
+        sources: [
+          { label: 'Nobel Prize — Physiology or Medicine 1962', url: 'https://www.nobelprize.org/' },
+          { label: 'NHGRI — DNA Structure & Franklin', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'restriction-enzymes-1960s',
+        year: '1960s–1970s',
+        title: 'Restriction Enzymes ("Molecular Scissors")',
+        pioneers: ['Werner Arber', 'Hamilton O. Smith', 'Daniel Nathans'],
+        monogram: 'ASN',
+        eraId: 'recombinant',
+        x: 1420,
+        position: 'bottom',
+        shortDesc: 'Discovered bacterial restriction endonucleases that cleave DNA at defined nucleotide sequences.',
+        mechanismType: 'restriction',
+        identity: {
+          fullName: 'Werner Arber, Hamilton O. Smith, and Daniel Nathans',
+          lifespan: 'Arber (b. 1929), Smith (b. 1931), Nathans (1928–1999)',
+          nationality: 'Swiss and American',
+          role: 'Microbiologist and molecular geneticists',
+          institutions: ['University of Geneva / Biozentrum Basel', 'Johns Hopkins University']
+        },
+        biography: 'Working in Geneva and Basel during the 1950s and 1960s, Werner Arber investigated host-controlled restriction and modification of bacteriophages, proposing that bacteria protect themselves by cleaving foreign DNA while methylating their own. At Johns Hopkins around 1968–1970, Hamilton Smith isolated HindII, the first type II restriction enzyme shown to cut double-stranded DNA at a specific symmetric sequence. Daniel Nathans then used restriction enzymes to map viral genomes into ordered fragments, creating a versatile physical dissection tool.',
+        contribution: 'Restriction endonucleases act as sequence-specific molecular cleavage tools, cutting DNA at recognizable target motifs and frequently generating sticky (overhanging) or blunt ends that can be joined to other DNA fragments.',
+        howItWorked: 'Bacteria methylate host recognition sites to block cleavage while restriction enzymes hydrolyze the phosphodiester backbone of unmethylated invading DNA at specific base sequences, yielding reproducible DNA fragments of defined length.',
+        importance: 'Before restriction enzymes, cutting large DNA molecules cleanly at predictable locations was notoriously difficult. They gave researchers reproducible DNA building blocks essential for gene cloning, physical mapping, and recombinant DNA construction.',
+        additionalInfo: {
+          awards: ['Nobel Prize in Physiology or Medicine (1978 — Arber, Smith, and Nathans)'],
+          publications: ['Arber & Dussoix (1962)', 'Kelly & Smith (Journal of Molecular Biology, 1970)', 'Danna & Nathans (PNAS, 1971)'],
+          collaborators: ['Thomas J. Kelly', 'Kathleen Danna'],
+          controversies: ['Early biosafety concerns emerged as cutting and recombining viral and bacterial DNAs made new chimeric molecules possible.'],
+          connections: ['Directly enabled 1972–1973 recombinant DNA splicing and cloning experiments.']
+        },
+        sources: [
+          { label: 'Nobel Prize — Physiology or Medicine 1978', url: 'https://www.nobelprize.org/' },
+          { label: 'NIH / PubMed — Restriction Enzymes', url: 'https://pubmed.ncbi.nlm.nih.gov/' }
+        ]
+      },
+      {
+        id: 'berg-rDNA-1972',
+        year: '1972',
+        title: 'First Recombinant DNA Molecule',
+        pioneers: ['Paul Berg'],
+        monogram: 'PB',
+        eraId: 'recombinant',
+        x: 1800,
+        position: 'top',
+        shortDesc: 'Joined DNA from distinct biological sources in vitro to form the first recombinant DNA molecule.',
+        mechanismType: 'ligation',
+        identity: {
+          fullName: 'Paul Berg',
+          lifespan: '1926–2023',
+          nationality: 'American',
+          role: 'Biochemist and molecular biologist',
+          institutions: ['Stanford University School of Medicine']
+        },
+        biography: 'Raised in Brooklyn and educated at Penn State and Case Western Reserve, Paul Berg became a prominent biochemist at Washington University in St. Louis and later Stanford University. Having studied transfer RNA and aminoacyl-tRNA synthetases, Berg turned to mammalian tumor viruses such as SV40 as tools to study gene regulation in animal cells. In 1972, his laboratory combined SV40 DNA with lambda phage and galactose operon sequences in vitro, creating a hybrid recombinant DNA molecule while also initiating vital conversations about biological containment.',
+        contribution: 'Berg demonstrated that DNA molecules from different organisms could be covalently linked in vitro to form a unified recombinant DNA construct.',
+        howItWorked: 'Researchers cleaved and enzymatically joined distinct DNA segments—including viral SV40 DNA and bacterial/phage sequences—using biochemical end-joining and DNA ligase to produce a single hybrid molecule.',
+        importance: 'This proved that genetic material from unrelated species could be physically combined in the laboratory, marking the transition from studying genes to engineering hybrid DNA constructs.',
+        additionalInfo: {
+          awards: ['Nobel Prize in Chemistry (1980)', 'National Medal of Science (1983)'],
+          publications: ['Jackson, Symons & Berg (PNAS, 1972)'],
+          collaborators: ['David Jackson', 'Robert Symons', 'Maxine Singer'],
+          controversies: ['Because SV40 was a primate/mammalian virus and E. coli inhabited the human gut, Berg voluntarily paused planned E. coli experiments with SV40 recombinants and helped organize safety guidelines.'],
+          connections: ['Bridged restriction/ligation enzymology with plasmid cloning and the 1975 Asilomar conference.']
+        },
+        sources: [
+          { label: 'Nobel Prize — Chemistry 1980', url: 'https://www.nobelprize.org/' },
+          { label: 'NHGRI — Recombinant DNA History', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'mertz-davis-1972',
+        year: '1972',
+        title: 'Cohesive-End Cutting & Joining Techniques',
+        pioneers: ['Janet Mertz', 'Ronald Davis'],
+        monogram: 'MD',
+        eraId: 'recombinant',
+        x: 2180,
+        position: 'bottom',
+        shortDesc: 'Showed EcoRI creates complementary sticky ends that anneal and ligate cleanly with DNA ligase.',
+        mechanismType: 'restriction',
+        identity: {
+          fullName: 'Janet E. Mertz and Ronald W. Davis',
+          lifespan: 'Mertz (b. 1949), Davis (b. 1941)',
+          nationality: 'American',
+          role: 'Molecular biologists and geneticists',
+          institutions: ['Stanford University School of Medicine']
+        },
+        biography: 'As a graduate student working with Paul Berg and Ronald Davis at Stanford, Janet Mertz investigated how the EcoRI restriction endonuclease cleaved SV40 DNA. Together with Davis, who pioneered electron microscopy heteroduplex mapping and nucleic acid techniques at Stanford, they showed that EcoRI makes staggered cuts leaving short single-stranded overhangs ("sticky ends"). Because complementary sticky ends pair via hydrogen bonding, DNA ligase could easily seal fragments from different sources.',
+        contribution: 'Mertz and Davis demonstrated that EcoRI-generated cohesive ends allow straightforward annealing and covalent ligation of diverse DNA fragments without elaborate homopolymer tailing.',
+        howItWorked: 'EcoRI recognizes a six-base sequence (GAATTC) and cleaves both strands asymmetrically, leaving overhanging single-stranded ends that base-pair with matching overhangs before DNA ligase seals the sugar-phosphate backbone.',
+        importance: 'Cohesive-end ligation dramatically simplified recombinant DNA assembly and became a standard workhorse method across molecular cloning laboratories worldwide.',
+        additionalInfo: {
+          awards: ['Major contributions recognized across molecular cloning historiography'],
+          publications: ['Mertz & Davis (PNAS, 1972)'],
+          collaborators: ['Paul Berg', 'Herbert Boyer (EcoRI characterization)'],
+          controversies: ['Discussions at Cold Spring Harbor (1972) highlighted the ease of generating recombinant molecules once EcoRI sticky ends were understood.'],
+          connections: ['Directly enabled the 1973 Cohen–Boyer plasmid cloning breakthrough.']
+        },
+        sources: [
+          { label: 'NIH / PubMed — Mertz & Davis (1972)', url: 'https://pubmed.ncbi.nlm.nih.gov/' },
+          { label: 'NHGRI — Molecular Cloning Milestones', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'cohen-boyer-1973',
+        year: '1973',
+        title: 'Recombinant DNA Cloning in Plasmids',
+        pioneers: ['Stanley Norman Cohen', 'Herbert Wayne Boyer', 'Annie Chang', 'Robert Helling'],
+        monogram: 'CBCH',
+        eraId: 'recombinant',
+        x: 2560,
+        position: 'top',
+        shortDesc: 'Combined restriction cutting, ligation, and bacterial transformation to clone foreign genes in E. coli.',
+        mechanismType: 'plasmid',
+        identity: {
+          fullName: 'Stanley N. Cohen, Herbert W. Boyer, Annie Chang, and Robert B. Helling',
+          lifespan: 'Cohen (b. 1935), Boyer (b. 1936), Chang, Helling',
+          nationality: 'American',
+          role: 'Geneticists and biochemists',
+          institutions: ['Stanford University', 'University of California, San Francisco (UCSF)']
+        },
+        biography: 'At Stanford, Stanley Cohen studied bacterial plasmids and transformation methods alongside Annie Chang, while Herbert Boyer at UCSF—working with collaborators including Robert Helling—characterized the EcoRI restriction enzyme. Meeting at a 1972 conference in Hawaii, Cohen and Boyer united their complementary tools: using EcoRI to cut plasmids and foreign DNA, ligating them into chimeric plasmids, and introducing them into E. coli where the bacteria replicated the inserted genetic instructions.',
+        contribution: 'They established practical recombinant DNA cloning—inserting foreign DNA into a self-replicating plasmid vector and transforming host bacteria so that engineered DNA could be copied and expressed.',
+        howItWorked: 'Plasmid DNA and donor DNA were cut with EcoRI, joined with DNA ligase into a recombinant plasmid carrying selectable markers (such as antibiotic resistance), and introduced into E. coli cells, which replicated the plasmid along with the inserted DNA.',
+        importance: 'Cloning turned recombinant DNA from a single hybrid molecule into a scalable manufacturing and research platform, launching the modern biotechnology industry and enabling engineered proteins and therapeutics.',
+        additionalInfo: {
+          awards: ['National Medal of Science', 'Albert Lasker Basic Medical Research Award (1980)', 'Founding of Genentech (Boyer, 1976)'],
+          publications: ['Cohen, Chang, Boyer & Helling (PNAS, 1973)'],
+          collaborators: ['Annie Chang', 'Robert B. Helling', 'Paul Berg'],
+          controversies: ['Patents on recombinant DNA and early commercial spin-offs sparked intense debates over academic openness, biosafety, and intellectual property.'],
+          connections: ['Directly enabled recombinant human insulin and industrial protein expression.']
+        },
+        sources: [
+          { label: 'NHGRI — Cohen & Boyer Cloning', url: 'https://www.genome.gov/' },
+          { label: 'NIH / PubMed — Cohen et al. (1973)', url: 'https://pubmed.ncbi.nlm.nih.gov/' }
+        ]
+      },
+      {
+        id: 'asilomar-1975',
+        year: '1975',
+        title: 'The Asilomar Conference on Recombinant DNA',
+        pioneers: ['Paul Berg', 'Maxine Singer', 'David Baltimore', 'Sydney Brenner'],
+        monogram: 'ASLM',
+        eraId: 'recombinant',
+        x: 2940,
+        position: 'bottom',
+        shortDesc: 'Scientists established risk-tiered biosafety and containment guidelines for recombinant DNA research.',
+        mechanismType: 'governance',
+        identity: {
+          fullName: 'Paul Berg, Maxine Singer, David Baltimore, Sydney Brenner, and Conference Organizers',
+          lifespan: 'Berg (1926–2023), Singer (1924–2024), Baltimore (b. 1938), Brenner (1927–2019)',
+          nationality: 'International scientific gathering (led largely by US & UK researchers)',
+          role: 'Molecular biologists, virologists, legal scholars, and policy advisors',
+          institutions: ['Asilomar Conference Grounds, Pacific Grove, California']
+        },
+        biography: 'Following the 1974 Berg letter calling for a temporary pause on certain recombinant DNA experiments, roughly 140 biologists, physicians, lawyers, and policymakers gathered at Asilomar in February 1975. Led by an organizing committee including Paul Berg, Maxine Singer, David Baltimore, Richard Roblin, and Sydney Brenner, participants evaluated potential biohazards and matched experimental risk levels to physical and biological containment.',
+        contribution: 'Asilomar created a structured framework of biological containment (such as weakened host strains and vectors) and physical safety levels that allowed responsible recombinant DNA research to proceed under oversight.',
+        howItWorked: 'Experiments were stratified by estimated hazard—ranging from low-risk routine cloning to higher-containment protocols for viral or pathogenic sequences—paired with laboratory practices and evolving government guidelines such as NIH recombinant DNA rules.',
+        importance: 'It set a landmark precedent for proactive scientific self-governance and biosafety risk management, serving as a reference point for later debates over gene therapy, synthetic biology, and CRISPR.',
+        additionalInfo: {
+          awards: ['Landmark policy milestone in modern life sciences governance'],
+          publications: ['Berg et al. (Science, 1975 — Summary Statement of the Asilomar Conference)'],
+          collaborators: ['Maxine Singer', 'David Baltimore', 'Richard Roblin', 'Sydney Brenner'],
+          controversies: ['Critics debated whether internal scientific governance sufficiently included broader public voices, and some initial risk estimates later proved more conservative than needed.'],
+          connections: ['Safeguarded recombinant DNA research leading to approved therapeutics like human insulin.']
+        },
+        sources: [
+          { label: 'NHGRI — Asilomar Conference', url: 'https://www.genome.gov/' },
+          { label: 'NIH / PubMed — Asilomar Summary (1975)', url: 'https://pubmed.ncbi.nlm.nih.gov/' }
+        ]
+      },
+      {
+        id: 'sanger-sequencing-1977',
+        year: '1977',
+        title: 'Chain-Termination DNA Sequencing',
+        pioneers: ['Frederick Sanger'],
+        monogram: 'FS',
+        eraId: 'biotech',
+        x: 3340,
+        position: 'top',
+        shortDesc: 'Developed dideoxynucleotide chain-termination sequencing to read exact DNA base order.',
+        mechanismType: 'sequencing',
+        identity: {
+          fullName: 'Frederick Sanger',
+          lifespan: '1918–2013',
+          nationality: 'British',
+          role: 'Biochemist (two-time Nobel laureate)',
+          institutions: ['MRC Laboratory of Molecular Biology, Cambridge']
+        },
+        biography: 'After determining the amino acid sequence of insulin in the 1950s (winning his first Nobel Prize in Chemistry in 1958), Frederick Sanger turned to sequencing nucleic acids at Cambridge. In 1977, he and colleagues introduced the dideoxy chain-termination method ("Sanger sequencing"), using modified nucleotides lacking a 3’-hydroxyl group to halt strand elongation at specific bases and resolve fragments by gel electrophoresis.',
+        contribution: 'Sanger sequencing provided a fast, accurate way to read the nucleotide sequence (A, T, C, G) of DNA molecules, making it possible to verify cloned genes and map genomes.',
+        howItWorked: 'DNA polymerase synthesizes complementary strands in the presence of normal deoxynucleotides and small amounts of chain-terminating dideoxynucleotides (ddATP, ddTTP, ddCTP, ddGTP), generating nested fragments ending at known bases that can be ordered by size.',
+        importance: 'You cannot reliably engineer or edit a sequence without knowing its exact letters. Sanger sequencing underpinned gene verification, viral and bacterial genomics, and the early Human Genome Project.',
+        additionalInfo: {
+          awards: ['Nobel Prize in Chemistry (1958 and 1980 — one of only four two-time Nobel laureates)'],
+          publications: ['Sanger, Nicklen & Coulson (PNAS, 1977 — "DNA sequencing with chain-terminating inhibitors")'],
+          collaborators: ['Alan Coulson', 'Steven Nicklen'],
+          controversies: ['Humble and unassuming by temperament, Sanger declined a knighthood, preferring to be known simply as a researcher.'],
+          connections: ['Enabled sequence verification for engineered plasmids, insulin constructs, and later genome sequencing.']
+        },
+        sources: [
+          { label: 'Nobel Prize — Chemistry 1980', url: 'https://www.nobelprize.org/' },
+          { label: 'NHGRI — DNA Sequencing History', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'recombinant-insulin-1982',
+        year: '1982',
+        title: 'Recombinant Human Insulin Approval',
+        pioneers: ['Arthur Riggs', 'Keiichi Itakura', 'Herbert Boyer', 'Genentech & City of Hope Teams'],
+        monogram: 'INS',
+        eraId: 'biotech',
+        x: 3720,
+        position: 'bottom',
+        shortDesc: 'First FDA-approved genetically engineered medicine made via recombinant DNA in bacteria.',
+        mechanismType: 'insulin',
+        identity: {
+          fullName: 'Arthur Riggs, Keiichi Itakura, Herbert Boyer, and Collaborating Teams',
+          lifespan: 'Riggs (1939–2023), Itakura (b. 1942), Boyer (b. 1936)',
+          nationality: 'American and Japanese-American',
+          role: 'Molecular biologists, synthetic chemists, and biotechnology pioneers',
+          institutions: ['City of Hope National Medical Center', 'Genentech', 'Eli Lilly']
+        },
+        biography: 'For decades, people with diabetes relied primarily on insulin extracted from pig or cow pancreases, which could supply shortages or immune reactions in some patients. In the late 1970s, researchers at City of Hope (including Arthur Riggs and Keiichi Itakura) and Genentech—co-founded by Herbert Boyer and Robert Swanson—engineered E. coli strains to produce human insulin chains, leading to 1982 regulatory approval of biosynthetic human insulin (Humulin) in partnership with Eli Lilly.',
+        contribution: 'Demonstrated that human therapeutic proteins could be manufactured safely and reliably using genetically engineered microorganisms rather than animal tissue extraction.',
+        howItWorked: 'Synthetic DNA sequences encoding human insulin A and B chains (or proinsulin constructs) were inserted into bacterial plasmids, expressed in E. coli fermentation cultures, purified, and folded into active human insulin.',
+        importance: 'Recombinant human insulin proved the clinical and commercial power of genetic engineering in medicine, opening the door to monoclonal antibodies, clotting factors, vaccines, and engineered biologics.',
+        additionalInfo: {
+          awards: ['FDA approval in 1982 as the first approved recombinant DNA human pharmaceutical'],
+          publications: ['Goeddel et al. (PNAS, 1979 — Expression in E. coli of chemically synthesized genes for human insulin)'],
+          collaborators: ['David Goeddel', 'Robert Swanson', 'Eli Lilly & Co.'],
+          controversies: ['Transitioning patients from animal-derived insulin to recombinant human insulin involved clinical monitoring and debates over hypoglycemia awareness.'],
+          connections: ['Built on Cohen–Boyer plasmid cloning and synthetic gene assembly.']
+        },
+        sources: [
+          { label: 'U.S. FDA — Biotechnology & Recombinant Insulin', url: 'https://www.fda.gov/' },
+          { label: 'NHGRI — First Recombinant DNA Drug', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'transgenic-plants-1983',
+        year: '1982–1983',
+        title: 'Genetically Engineered Plants via Agrobacterium',
+        pioneers: ['Mary-Dell Chilton', 'Marc Van Montagu', 'Jeff Schell', 'Robert Fraley'],
+        monogram: 'AGRO',
+        eraId: 'biotech',
+        x: 4100,
+        position: 'top',
+        shortDesc: 'Used Agrobacterium tumefaciens Ti plasmids to transfer new genes stably into plant cells.',
+        mechanismType: 'agrobacterium',
+        identity: {
+          fullName: 'Mary-Dell Chilton, Marc Van Montagu, Jeff Schell, and Robert T. Fraley',
+          lifespan: 'Chilton (b. 1939), Van Montagu (b. 1933), Schell (1935–2003), Fraley (b. 1953)',
+          nationality: 'American and Belgian',
+          role: 'Plant molecular biologists and agricultural geneticists',
+          institutions: ['Washington University in St. Louis', 'Ghent University / Max Planck Institute', 'Monsanto']
+        },
+        biography: 'Independent teams in the late 1970s and early 1980s studied how the soil bacterium Agrobacterium tumefaciens naturally transfers a segment of its Ti (tumor-inducing) plasmid—called T-DNA—into plant genomes. Mary-Dell Chilton’s group showed T-DNA integrates into plant nuclear DNA, Marc Van Montagu and Jeff Schell dissected Ti plasmid genetics in Belgium and Germany, and Robert Fraley and colleagues advanced disarmed vectors and selectable marker transformation in crop cells around 1983.',
+        contribution: 'Turned a natural plant-pathogen DNA transfer mechanism into a disarmed gene-delivery vector capable of introducing desired traits into whole regenerated plants.',
+        howItWorked: 'Disease-causing tumor genes on the Ti plasmid were removed ("disarmed") while keeping the border sequences required for T-DNA transfer, allowing researchers to insert foreign genes and regenerate transgenic plants.',
+        importance: 'Provided the foundational method for agricultural biotechnology, enabling crops studied for insect resistance, herbicide tolerance, disease resistance, and nutritional traits.',
+        additionalInfo: {
+          awards: ['World Food Prize (2013 — Chilton, Van Montagu, and Fraley)'],
+          publications: ['Chilton et al. (Cell, 1977)', 'Herrera-Estrella et al. (Nature, 1983)', 'Fraley et al. (PNAS, 1983)'],
+          collaborators: ['Eugene Nester', 'Luis Herrera-Estrella', 'Michael Bevan'],
+          controversies: ['Agricultural genetic engineering has sparked ongoing public and regulatory debates over seed patents, ecological impact, labeling, and food safety frameworks.'],
+          connections: ['Connected plasmid vector engineering to whole-organism plant genetics and modern crop editing.']
+        },
+        sources: [
+          { label: 'NIH / PubMed — Plant Transformation (1983)', url: 'https://pubmed.ncbi.nlm.nih.gov/' },
+          { label: 'Smithsonian Institution — Agricultural Biotech', url: 'https://www.si.edu/' }
+        ]
+      },
+      {
+        id: 'mullis-pcr-1983',
+        year: '1983',
+        title: 'Polymerase Chain Reaction (PCR)',
+        pioneers: ['Kary Mullis'],
+        monogram: 'PCR',
+        eraId: 'biotech',
+        x: 4480,
+        position: 'bottom',
+        shortDesc: 'Invented thermal-cycled DNA amplification to make millions of copies of a target sequence.',
+        mechanismType: 'pcr',
+        identity: {
+          fullName: 'Kary Banks Mullis',
+          lifespan: '1944–2019',
+          nationality: 'American',
+          role: 'Biochemist',
+          institutions: ['Cetus Corporation']
+        },
+        biography: 'While working as a DNA chemist at Cetus Corporation in California in 1983, Kary Mullis conceived a method to amplify a specific segment of DNA exponentially using opposing oligonucleotide primers and repeated temperature cycles. Paired later with thermostable Taq DNA polymerase from Thermus aquaticus (advanced with Cetus colleagues such as Randall Saiki and Henry Erlich), PCR eliminated the need to add fresh polymerase after each high-temperature denaturation step.',
+        contribution: 'PCR enabled rapid, targeted amplification of trace amounts of DNA into billions of copies within hours.',
+        howItWorked: 'Each cycle repeats three steps: denaturation (separating double-stranded DNA with heat), annealing (binding short primers to flanking sequences), and extension (synthesizing new strands with DNA polymerase), doubling target copies per cycle ($2^n$).',
+        importance: 'PCR transformed molecular biology, forensics, infectious disease diagnostics, ancient DNA research, and genetic screening by making tiny quantities of DNA easy to detect, clone, and sequence.',
+        additionalInfo: {
+          awards: ['Nobel Prize in Chemistry (1993)'],
+          publications: ['Mullis & Faloona (Methods in Enzymology, 1987)', 'Saiki et al. (Science, 1988 — thermostable Taq polymerase)'],
+          collaborators: ['Randall Saiki', 'Henry Erlich', 'Fred Faloona'],
+          controversies: ['Later in life, Mullis expressed contrarian views on HIV/AIDS and climate science that conflicted with scientific consensus, separate from his Nobel-recognized PCR invention.'],
+          connections: ['Accelerated gene cloning, diagnostics, sequencing prep, and CRISPR validation.']
+        },
+        sources: [
+          { label: 'Nobel Prize — Chemistry 1993', url: 'https://www.nobelprize.org/' },
+          { label: 'NHGRI — Polymerase Chain Reaction (PCR)', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'gene-therapy-1990',
+        year: '1990',
+        title: 'Early Approved Human Gene Therapy Trial',
+        pioneers: ['W. French Anderson', 'R. Michael Blaese', 'Kenneth Culver'],
+        monogram: 'ABC',
+        eraId: 'biotech',
+        x: 4860,
+        position: 'top',
+        shortDesc: 'Initiated the first NIH/FDA-approved human gene-transfer clinical study for ADA-SCID.',
+        mechanismType: 'therapy',
+        identity: {
+          fullName: 'W. French Anderson, R. Michael Blaese, and Kenneth W. Culver',
+          lifespan: 'Anderson (b. 1936), Blaese (b. 1937), Culver',
+          nationality: 'American',
+          role: 'Physicians and gene-therapy researchers',
+          institutions: ['National Institutes of Health (NIH)']
+        },
+        biography: 'In September 1990, NIH researchers W. French Anderson, R. Michael Blaese, and Kenneth Culver treated a four-year-old patient with adenosine deaminase deficiency (ADA-SCID), a severe inherited immune disorder, in the first federally approved clinical gene-transfer protocol in the United States. Scientists harvested the patient’s T-lymphocytes, used a retroviral vector to deliver a functional human ADA gene copy ex vivo, and infused the modified cells back into the patient alongside enzyme replacement therapy.',
+        contribution: 'Demonstrated early clinical feasibility of introducing functional genetic material into human cells to address an inherited monogenic disorder.',
+        howItWorked: 'Patient immune cells were isolated in the laboratory, transduced with a replication-incompetent viral vector carrying the normal ADA cDNA sequence, expanded, and returned to the patient.',
+        importance: 'Established clinical protocols, vector safety standards, and regulatory pathways for somatic gene therapy, even as early trials also revealed challenges in durability, delivery efficiency, and insertional mutagenesis.',
+        additionalInfo: {
+          awards: ['Foundational clinical milestone in human gene therapy'],
+          publications: ['Blaese et al. (Science, 1995 — T lymphocyte-directed gene therapy for ADA-SCID)'],
+          collaborators: ['Steven Rosenberg', 'NIH clinical and regulatory teams'],
+          controversies: ['Over the broader history of early gene therapy (including later trials such as Jesse Gelsinger in 1999 and X-linked SCID vector leukemias), safety oversight and vector design underwent major scrutiny and reform.'],
+          connections: ['Led toward modern viral and non-viral gene therapies and ex vivo cell editing.']
+        },
+        sources: [
+          { label: 'NHGRI — Human Gene Therapy Milestones', url: 'https://www.genome.gov/' },
+          { label: 'NIH / PubMed — ADA-SCID Gene Therapy', url: 'https://pubmed.ncbi.nlm.nih.gov/' }
+        ]
+      },
+      {
+        id: 'crispr-origins-1987-2007',
+        year: '1987–2007',
+        title: 'Discovery of CRISPR & Bacterial Adaptive Immunity',
+        pioneers: ['Yoshizumi Ishino', 'Francisco Mojica', 'Rodolphe Barrangou', 'Philippe Horvath'],
+        monogram: 'CRSP',
+        eraId: 'crispr',
+        x: 5260,
+        position: 'bottom',
+        shortDesc: 'Uncovered clustered repeats, spacer matches to viral DNA, and Cas defense in microbes.',
+        mechanismType: 'crispr-immunity',
+        identity: {
+          fullName: 'Yoshizumi Ishino, Francisco Mojica, Rodolphe Barrangou, Philippe Horvath, and Collaborators',
+          lifespan: 'Ishino (b. 1957), Mojica (b. 1963), Barrangou, Horvath',
+          nationality: 'Japanese, Spanish, American, and French',
+          role: 'Microbiologists and food/genomic researchers',
+          institutions: ['Osaka University', 'University of Alicante', 'Danisco']
+        },
+        biography: 'Long before CRISPR became a genome-editing tool, curiosity-driven microbiology uncovered its natural role. In 1987, Yoshizumi Ishino and colleagues reported unusual repeated DNA sequences near the iap gene in E. coli. In the 1990s and early 2000s, Francisco Mojica systematically studied these repeats across archaea and bacteria, coined the term CRISPR, and discovered that "spacer" sequences matched bacteriophage and plasmid DNA—hinting at an immune memory. In 2007, Rodolphe Barrangou, Philippe Horvath, and colleagues experimentally proved in Streptococcus thermophilus that CRISPR-Cas systems provide adaptive phage resistance.',
+        contribution: 'Established that CRISPR arrays and Cas proteins constitute a programmable adaptive immune system in bacteria and archaea that stores snippets of invading viral DNA to recognize future infections.',
+        howItWorked: 'Bacteria capture short foreign DNA segments as spacers inside the CRISPR locus; transcribed CRISPR RNAs guide Cas nucleases to match and cleave complementary invading nucleic acids.',
+        importance: 'Without fundamental microbial research into how bacteria defend themselves against viruses, programmable CRISPR nucleases could never have been recognized or repurposed as editing tools.',
+        additionalInfo: {
+          awards: ['Japan Prize (2024 — Mojica and others)', 'Warren Alpert Foundation Prize', 'Canada Gairdner Awards'],
+          publications: ['Ishino et al. (Journal of Bacteriology, 1987)', 'Mojica et al. (2005)', 'Barrangou et al. (Science, 2007)'],
+          collaborators: ['Ruud Jansen (coined CRISPR acronym)', 'Alexander Bolotin', 'Eugene Koonin'],
+          controversies: ['Early patent and prize narratives sometimes underemphasized foundational microbiology before 2012; historians emphasize cumulative basic research.'],
+          connections: ['Directly enabled the 2012 programmable CRISPR-Cas9 breakthrough.']
+        },
+        sources: [
+          { label: 'NHGRI — CRISPR-Cas9 History', url: 'https://www.genome.gov/' },
+          { label: 'NIH / PubMed — Barrangou et al. (2007)', url: 'https://pubmed.ncbi.nlm.nih.gov/' }
+        ]
+      },
+      {
+        id: 'doudna-charpentier-2012',
+        year: '2012',
+        title: 'Programmable CRISPR-Cas9 Genome Editing',
+        pioneers: ['Jennifer Doudna', 'Emmanuelle Charpentier'],
+        monogram: 'DC',
+        eraId: 'crispr',
+        x: 5640,
+        position: 'top',
+        shortDesc: 'Engineered single-guide RNA (sgRNA) to program Cas9 to cut specific DNA sequences.',
+        mechanismType: 'crispr-cas9',
+        identity: {
+          fullName: 'Jennifer A. Doudna and Emmanuelle Charpentier',
+          lifespan: 'Doudna (b. 1964), Charpentier (b. 1968)',
+          nationality: 'American and French',
+          role: 'Biochemists and microbiologists',
+          institutions: ['UC Berkeley / HHMI', 'Umeå University / Max Planck Unit for the Science of Pathogens']
+        },
+        biography: 'Emmanuelle Charpentier, studying Streptococcus pyogenes, discovered tracrRNA and its role in maturing CRISPR crRNA alongside Jörg Vogel and colleagues. Collaborating with structural biochemist Jennifer Doudna and team member Martin Jinek, they demonstrated in vitro in 2012 that Cas9 is an RNA-guided DNA endonuclease that can be programmed by a custom-designed single-guide RNA (sgRNA) to cleave virtually any DNA sequence containing a suitable protospacer adjacent motif (PAM).',
+        contribution: 'Transformed a complex two-RNA bacterial defense system into a streamlined, programmable two-component tool (Cas9 + sgRNA) capable of cutting targeted DNA sites.',
+        howItWorked: 'A synthetic guide RNA pairs with a 20-nucleotide target DNA sequence adjacent to a PAM motif, positioning Cas9’s HNH and RuvC nuclease domains to create a site-specific double-strand break in the DNA.',
+        importance: 'Made targeted genome editing dramatically faster, cheaper, and more accessible across plants, microbes, model organisms, and human cells than earlier engineered nucleases such as ZFNs or TALENs.',
+        additionalInfo: {
+          awards: ['Nobel Prize in Chemistry (2020 — Doudna and Charpentier)'],
+          publications: ['Jinek, Chylinski, Fonfara, Hauer, Doudna & Charpentier (Science, 2012)'],
+          collaborators: ['Martin Jinek', 'Krzysztof Chylinski', 'Elitza Deltcheva', 'Jörg Vogel'],
+          controversies: ['High-profile patent disputes arose between UC/Charpentier/Berkeley and the Broad Institute regarding eukaryotic/mammalian applications and timing of filings.'],
+          connections: ['Sparked rapid mammalian cell adoption (2013), base editing (2016), prime editing (2019), and clinical CRISPR therapies.']
+        },
+        sources: [
+          { label: 'Nobel Prize — Chemistry 2020', url: 'https://www.nobelprize.org/' },
+          { label: 'NHGRI — What is CRISPR?', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'zhang-church-2013',
+        year: '2013',
+        title: 'CRISPR Genome Editing in Mammalian Cells',
+        pioneers: ['Feng Zhang', 'George Church', 'Le Cong', 'Prashant Mali'],
+        monogram: 'ZCMC',
+        eraId: 'crispr',
+        x: 6020,
+        position: 'bottom',
+        shortDesc: 'Adapted CRISPR-Cas9 systems for efficient targeted genome editing in human and mouse cells.',
+        mechanismType: 'crispr-cas9',
+        identity: {
+          fullName: 'Feng Zhang, George M. Church, Le Cong, Prashant Mali, and Collaborators',
+          lifespan: 'Zhang (b. 1982), Church (b. 1954)',
+          nationality: 'Chinese-American and American',
+          role: 'Bioengineers, synthetic biologists, and geneticists',
+          institutions: ['Broad Institute of MIT and Harvard / McGovern Institute', 'Harvard Medical School / Wyss Institute']
+        },
+        biography: 'In early 2013, research groups led by Feng Zhang (with first author Le Cong and colleagues) and George Church (with first author Prashant Mali and colleagues) published demonstrations adapting CRISPR-Cas9 to edit endogenous loci in mammalian—including human—cells. They incorporated nuclear localization signals, codon optimization, and guide RNA expression designs suited to eukaryotic chromatin and cellular machinery.',
+        contribution: 'Demonstrated practical, multiplexed genome editing in human and mammalian cells, allowing researchers to knock out or modify genes directly in mammalian genomes.',
+        howItWorked: 'Cas9 and guide RNAs were delivered into mammalian cells using expression plasmids or vectors equipped with nuclear localization sequences so the ribonucleoprotein complex could enter the nucleus and cleave target genomic DNA.',
+        importance: 'Bridged biochemical cleavage in vitro to functional editing in human cells, accelerating disease modeling, functional genomics screens, and therapeutic research.',
+        additionalInfo: {
+          awards: ['Breakthrough Prize in Life Sciences', 'Albany Medical Center Prize', 'National Medal of Technology and Innovation (Church)'],
+          publications: ['Cong et al. (Science, 2013)', 'Mali et al. (Science, 2013)'],
+          collaborators: ['Le Cong', 'Prashant Mali', 'Luhan Yang', 'Marc Gill'],
+          controversies: ['Patent interference proceedings at the USPTO examined priority and enablement in eukaryotic cells versus initial in vitro demonstrations.'],
+          connections: ['Enabled precision variants like base editing and prime editing as well as human clinical trials.']
+        },
+        sources: [
+          { label: 'NIH / PubMed — Mammalian CRISPR (2013)', url: 'https://pubmed.ncbi.nlm.nih.gov/' },
+          { label: 'NHGRI — Genome Editing Milestones', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'base-editing-2016',
+        year: '2016',
+        title: 'DNA Base Editing Without Double-Strand Breaks',
+        pioneers: ['David R. Liu', 'Alexis C. Komor', 'Nicole Gaudelli'],
+        monogram: 'BE',
+        eraId: 'crispr',
+        x: 6400,
+        position: 'top',
+        shortDesc: 'Fused catalytically impaired Cas nickases to deaminases to convert single DNA letters directly.',
+        mechanismType: 'base-editing',
+        identity: {
+          fullName: 'David R. Liu, Alexis C. Komor, Nicole M. Gaudelli, and Collaborators',
+          lifespan: 'Liu (b. 1973), Komor, Gaudelli',
+          nationality: 'American',
+          role: 'Chemical biologists and genome-editing innovators',
+          institutions: ['Harvard University', 'Broad Institute of MIT and Harvard', 'HHMI']
+        },
+        biography: 'Conventional CRISPR-Cas9 creates double-strand DNA breaks, which cells often repair via error-prone pathways (producing random insertions or deletions—indels) or inefficient homology-directed repair for point mutations. David Liu’s lab—with Alexis Komor developing cytosine base editors (CBEs, converting C·G to T·A) in 2016 and Nicole Gaudelli developing adenine base editors (ABEs, converting A·T to G·C) in 2017—engineered fusion proteins that chemically convert single base pairs without breaking both DNA strands.',
+        contribution: 'Introduced programmable single-nucleotide conversions (transitions) with minimal double-strand breaks and fewer unwanted indels at target sites.',
+        howItWorked: 'A catalytically impaired Cas9 nickase nicks only one DNA strand while a tethered deaminase enzyme chemically alters a target base within a narrow editing window, guiding cellular repair to lock in the new base pair.',
+        importance: 'Many genetic diseases arise from single-letter point mutations. Base editing offered a cleaner surgical approach for point-mutation correction and model engineering.',
+        additionalInfo: {
+          awards: ['Breakthrough Prize in Life Sciences (Liu)', 'National Medal of Technology and Innovation'],
+          publications: ['Komor, Kim, Packer, Zuris & Liu (Nature, 2016)', 'Gaudelli et al. (Nature, 2017)'],
+          collaborators: ['Alexis C. Komor', 'Nicole M. Gaudelli', 'Holly A. Rees'],
+          controversies: ['Researchers continue to study bystander editing within the deaminase window and off-target RNA/DNA editing to improve specificity.'],
+          connections: ['Extended CRISPR beyond cutting to direct base chemistry, followed by prime editing in 2019.']
+        },
+        sources: [
+          { label: 'NIH / PubMed — Base Editing (2016)', url: 'https://pubmed.ncbi.nlm.nih.gov/' },
+          { label: 'NHGRI — Precision Genome Editing', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'prime-editing-2019',
+        year: '2019',
+        title: 'Prime Editing ("Search-and-Replace")',
+        pioneers: ['Andrew V. Anzalone', 'David R. Liu'],
+        monogram: 'PE',
+        eraId: 'crispr',
+        x: 6780,
+        position: 'bottom',
+        shortDesc: 'Combined a Cas9 nickase with reverse transcriptase and pegRNA for versatile edits without donor DNA.',
+        mechanismType: 'prime-editing',
+        identity: {
+          fullName: 'Andrew V. Anzalone, David R. Liu, and Collaborators',
+          lifespan: 'Anzalone, Liu (b. 1973)',
+          nationality: 'American',
+          role: 'Chemical biologists and genome engineers',
+          institutions: ['Broad Institute of MIT and Harvard', 'Harvard University', 'HHMI']
+        },
+        biography: 'While base editing excels at specific single-base transitions, many pathogenic mutations involve transversions, small insertions, or small deletions that base editors cannot easily make. In 2019, Andrew Anzalone, David Liu, and colleagues reported prime editing, a "search-and-replace" genome editing method that couples a Cas9 nickase to an engineered reverse transcriptase enzyme guided by a prime editing guide RNA (pegRNA).',
+        contribution: 'Enabled all 12 possible point-mutation substitutions as well as targeted small insertions and deletions without requiring double-strand breaks or exogenous donor DNA templates.',
+        howItWorked: 'The pegRNA both locates the target DNA site and encodes the desired edit template; Cas9 nickase nicks one strand, and reverse transcriptase copies the edited sequence from the pegRNA directly into the genomic nick before flap resolution.',
+        importance: 'Broadened precision genome editing to cover a far wider fraction of known human pathogenic variants with high product purity.',
+        additionalInfo: {
+          awards: ['Widely recognized major advance in precision genome engineering'],
+          publications: ['Anzalone et al. (Nature, 2019 — "Search-and-replace genome editing without double-strand breaks or donor DNA")'],
+          collaborators: ['David R. Liu lab team at Broad Institute and Harvard'],
+          controversies: ['Delivery size of the prime editor fusion protein and editing efficiency across diverse cell types remain active areas of engineering optimization.'],
+          connections: ['Built on Cas9 nickase engineering and base-editing lessons to expand precision editing.']
+        },
+        sources: [
+          { label: 'NIH / PubMed — Prime Editing (2019)', url: 'https://pubmed.ncbi.nlm.nih.gov/' },
+          { label: 'NHGRI — Genome Editing Advances', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'crispr-therapies-2020s',
+        year: '2017–2024',
+        title: 'Engineered Cell & CRISPR Therapies in Medicine',
+        pioneers: ['Clinical & Translational Gene-Editing Teams', 'Carl June', 'Michel Sadelain'],
+        monogram: 'RX',
+        eraId: 'modern',
+        x: 7180,
+        position: 'top',
+        shortDesc: 'Regulatory approvals of CAR-T cell therapies and ex vivo CRISPR therapies for blood disorders.',
+        mechanismType: 'therapy',
+        identity: {
+          fullName: 'Translational Gene & Cell Therapy Researchers and Clinical Teams (including CAR-T & CRISPR pioneers)',
+          lifespan: 'Modern clinical era (late 2010s–2020s)',
+          nationality: 'International clinical and academic teams',
+          role: 'Immunologists, hematologists, and translational geneticists',
+          institutions: ['Academic Medical Centers', 'Research Hospitals', 'Biotechnology & Regulatory Agencies']
+        },
+        biography: 'Translating laboratory genetic tools into approved patient treatments required decades of vector refinement, manufacturing standards, and clinical trials. Following early CAR-T cell immunotherapy milestones (with foundational contributions by researchers such as Carl June and Michel Sadelain) and CRISPR clinical trials for sickle cell disease and transfusion-dependent beta-thalassemia, regulators approved exagamglogene autotemcel (Casgevy) in 2023–2024 as a CRISPR-based medicine.',
+        contribution: 'Brought CRISPR-based genome editing and engineered immune cell therapies from experimental research into regulated clinical medicine for severe inherited blood disorders and hematologic malignancies.',
+        howItWorked: 'Patient hematopoietic stem cells or T cells are collected, genetically modified ex vivo—such as editing the BCL11A erythroid enhancer to boost fetal hemoglobin production—and infused back after conditioning.',
+        importance: 'Demonstrated that programmable genome editing can treat serious genetic diseases in patients, while highlighting cost, access, and long-term safety monitoring as central priorities.',
+        additionalInfo: {
+          awards: ['FDA and international regulatory approvals for engineered cell and CRISPR therapies (2017–2024)'],
+          publications: ['Frangoul et al. (New England Journal of Medicine, 2021 — CRISPR-Cas9 gene editing clinical trial)'],
+          collaborators: ['Clinical investigators, hematologists, patient advocacy groups, and regulators'],
+          controversies: ['High treatment costs, complex conditioning regimens, and equitable global access remain major ethical and healthcare policy challenges.'],
+          connections: ['Synthesizes recombinant DNA, viral/cell delivery, and CRISPR editing into clinical care.']
+        },
+        sources: [
+          { label: 'U.S. FDA — Approved Cellular & Gene Therapy Products', url: 'https://www.fda.gov/' },
+          { label: 'NHGRI — CRISPR in Clinical Trials', url: 'https://www.genome.gov/' }
+        ]
+      },
+      {
+        id: 'agri-modern-2020s',
+        year: '2020s',
+        title: 'Precision Agriculture & Climate-Resilient Crops',
+        pioneers: ['Plant Geneticists & Crop Engineers Worldwide'],
+        monogram: 'AGRI',
+        eraId: 'modern',
+        x: 7560,
+        position: 'bottom',
+        shortDesc: 'Applies modern genetics and gene editing to disease resistance, stress tolerance, and crop breeding.',
+        mechanismType: 'agrobacterium',
+        identity: {
+          fullName: 'Global Plant Geneticists, Agronomists, and Crop Biotechnology Teams',
+          lifespan: 'Contemporary era',
+          nationality: 'Global',
+          role: 'Plant scientists, breeders, and agricultural researchers',
+          institutions: ['Universities', 'CGIAR & National Agricultural Institutes', 'Agri-biotech Labs']
+        },
+        biography: 'Building on Agrobacterium transformation and decades of plant genetics, contemporary crop scientists use genomic selection, transgenic traits, and CRISPR editing to accelerate breeding in staple crops like rice, wheat, maize, and tomatoes. Rather than spending a decade backcrossing single traits, breeders can precisely modify susceptibility genes or stress-response pathways in elite lines.',
+        contribution: 'Accelerates crop improvement for pathogen resistance, drought or heat tolerance, yield stability, and reduced post-harvest spoilage.',
+        howItWorked: 'Genomic sequencing identifies alleles linked to agronomic traits, and targeted transformation or editing modifies specific genes in plant cells regenerated into whole lines tested across field environments.',
+        importance: 'Supports food security and climate adaptation under shifting weather patterns and emerging crop diseases, subject to region-specific regulatory and ecological evaluations.',
+        additionalInfo: {
+          awards: ['Multiple national and international agricultural innovation recognitions'],
+          publications: ['Peer-reviewed plant genomics and CRISPR crop breeding studies'],
+          collaborators: ['Public agricultural research institutes and university breeding programs'],
+          controversies: ['Countries regulate edited crops differently (e.g., distinguishing SDN-1/SDN-2 edits from transgenes), and debates continue over biodiversity, smallholder access, and seed systems.'],
+          connections: ['Builds directly on Mendel’s heredity principles and 1980s plant transformation.']
+        },
+        sources: [
+          { label: 'Smithsonian Institution — Science & Society', url: 'https://www.si.edu/' },
+          { label: 'NIH / PubMed — Genome Editing in Plants', url: 'https://pubmed.ncbi.nlm.nih.gov/' }
+        ]
+      },
+      {
+        id: 'future-horizons-2026',
+        year: '2025–2026+',
+        title: 'Biosafety, Ethics & Future Precision Horizons',
+        pioneers: ['Global Bioethicists, Scientists & Policy Bodies'],
+        monogram: '2026+',
+        eraId: 'modern',
+        x: 7940,
+        position: 'top',
+        shortDesc: 'Focuses on safer delivery, epigenetic/base/prime precision, biosecurity, and heritable-edit limits.',
+        mechanismType: 'governance',
+        identity: {
+          fullName: 'International Scientific Commissions, Bioethicists, and Genome Engineers',
+          lifespan: 'Ongoing era',
+          nationality: 'Global',
+          role: 'Researchers, ethicists, regulators, and public health experts',
+          institutions: ['WHO', 'National Academies', 'NHGRI', 'Research Universities']
+        },
+        biography: 'As genome editing matures from cutting DNA to fine-grained base, prime, and epigenome modulation—paired with lipid nanoparticles, viral vectors, and AI-guided protein/guide design—the scientific community faces deeper questions of delivery, equity, and ethics. International bodies broadly maintain strong caution against heritable human germline editing for reproduction while emphasizing transparent governance and equitable access to somatic therapies.',
+        contribution: 'Shapes responsible guardrails, safer in vivo delivery systems, and next-generation precision tools as genetic engineering enters its second half-century.',
+        howItWorked: 'Advances combine engineered Cas variants, smaller nucleases, epigenetic editors that modulate gene expression without altering DNA sequence, and targeted delivery vehicles tested through rigorous preclinical and clinical standards.',
+        importance: 'Ensures that scientific capability advances alongside public trust, biosecurity, ecological stewardship, and human rights.',
+        additionalInfo: {
+          awards: ['Ongoing international scientific and bioethics standard-setting'],
+          publications: ['National Academies & WHO reports on human genome editing governance'],
+          collaborators: ['Multilateral health organizations, ethicists, biologists, and civil society'],
+          controversies: ['Heritable human germline editing, gene drives in wild ecosystems, dual-use biosecurity, and unequal global access to expensive genetic medicines remain central ethical debates.'],
+          connections: ['Continues the arc from 19th-century pea plants and 1975 Asilomar norms into future biotechnology.']
+        },
+        sources: [
+          { label: 'NHGRI — Genome Editing Ethics & Policy', url: 'https://www.genome.gov/' },
+          { label: 'World Health Organization — Human Genome Editing', url: 'https://www.who.int/' }
+        ]
+      }
+    ];
+
+    const CONNECTIONS = [
+      { from: 'mendel-1865', to: 'avery-1944', label: 'Discrete inheritance → Molecular heredity' },
+      { from: 'avery-1944', to: 'dna-helix-1953', label: 'DNA identity → Double-helix structure' },
+      { from: 'dna-helix-1953', to: 'restriction-enzymes-1960s', label: 'Base pairing & DNA structure → Sequence-specific cleavage' },
+      { from: 'restriction-enzymes-1960s', to: 'berg-rDNA-1972', label: 'DNA cutting tools → First recombinant DNA' },
+      { from: 'restriction-enzymes-1960s', to: 'mertz-davis-1972', label: 'EcoRI restriction → Sticky-end ligation' },
+      { from: 'mertz-davis-1972', to: 'cohen-boyer-1973', label: 'Cohesive joining → Plasmid gene cloning' },
+      { from: 'berg-rDNA-1972', to: 'asilomar-1975', label: 'Hybrid DNA capabilities → Biosafety guidelines' },
+      { from: 'cohen-boyer-1973', to: 'recombinant-insulin-1982', label: 'Bacterial cloning → Recombinant human insulin' },
+      { from: 'cohen-boyer-1973', to: 'transgenic-plants-1983', label: 'Plasmid vectors → Agrobacterium plant transformation' },
+      { from: 'dna-helix-1953', to: 'sanger-sequencing-1977', label: 'Complementary strands → Chain-termination sequencing' },
+      { from: 'sanger-sequencing-1977', to: 'mullis-pcr-1983', label: 'Sequence targets → Exponential PCR amplification' },
+      { from: 'cohen-boyer-1973', to: 'gene-therapy-1990', label: 'Gene transfer vectors → Early clinical gene therapy' },
+      { from: 'crispr-origins-1987-2007', to: 'doudna-charpentier-2012', label: 'CRISPR-Cas defense → Programmable sgRNA-Cas9' },
+      { from: 'doudna-charpentier-2012', to: 'zhang-church-2013', label: 'Cas9 cleavage → Mammalian cell genome editing' },
+      { from: 'doudna-charpentier-2012', to: 'base-editing-2016', label: 'RNA-guided targeting → Single-base deamination' },
+      { from: 'base-editing-2016', to: 'prime-editing-2019', label: 'Nickase + reverse transcriptase → Search-and-replace editing' },
+      { from: 'gene-therapy-1990', to: 'crispr-therapies-2020s', label: 'Clinical cell delivery → Approved CRISPR medicines' },
+      { from: 'transgenic-plants-1983', to: 'agri-modern-2020s', label: 'Plant gene transfer → Precision crop breeding' },
+      { from: 'asilomar-1975', to: 'future-horizons-2026', label: 'Early oversight → Modern bioethics & governance' }
+    ];
+
+    const GLOSSARY = [
+      { term: 'DNA', def: 'Deoxyribonucleic acid: the double-stranded molecule carrying genetic instructions encoded in sequences of adenine (A), thymine (T), cytosine (C), and guanine (G).' },
+      { term: 'Gene', def: 'A functional segment of DNA (typically encoding an RNA or protein product) that influences biological traits and can be inherited.' },
+      { term: 'Plasmid', def: 'A small, usually circular double-stranded DNA molecule—often found in bacteria—that replicates independently of chromosomal DNA and serves as a cloning vector.' },
+      { term: 'Restriction Enzyme', def: 'A bacterial endonuclease that recognizes specific DNA nucleotide sequences and cleaves the DNA backbone at or near those sites.' },
+      { term: 'Recombinant DNA', def: 'A DNA molecule formed in the laboratory by combining genetic material from two or more distinct sources.' },
+      { term: 'Genetic Modification', def: 'Any deliberate alteration of an organism’s genetic material using biotechnology, such as introducing, deleting, or altering DNA sequences.' },
+      { term: 'PCR', def: 'Polymerase Chain Reaction: an in vitro thermal-cycling technique using primers and DNA polymerase to amplify a targeted DNA segment exponentially.' },
+      { term: 'CRISPR-Cas9', def: 'A programmable genome-editing system using a guide RNA to direct the Cas9 endonuclease to a specific DNA sequence adjacent to a PAM motif.' },
+      { term: 'Genome Editing', def: 'Targeted modification of DNA sequences at specific locations within a living cell’s genome using engineered nucleases or editor complexes.' },
+      { term: 'Base Editing', def: 'A precision editing method that fuses a catalytically impaired Cas nickase to a deaminase enzyme to convert one DNA base pair into another without a double-strand break.' },
+      { term: 'Prime Editing', def: 'A versatile "search-and-replace" editing technique combining a Cas9 nickase, reverse transcriptase, and a pegRNA to write small substitutions, insertions, or deletions.' }
+    ];
+
+    function StarfieldCanvas({ pan, zoom, reducedMotion }) {
+      const canvasRef = useRef(null);
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let animId;
+
+        const layers = [
+          { count: 140, speedFactor: 0.08, minR: 0.5, maxR: 1.1, alpha: 0.35 },
+          { count: 95, speedFactor: 0.18, minR: 0.8, maxR: 1.6, alpha: 0.55 },
+          { count: 45, speedFactor: 0.32, minR: 1.2, maxR: 2.1, alpha: 0.78 }
+        ];
+
+        const stars = [];
+        layers.forEach((layer, layerIdx) => {
+          for (let i = 0; i < layer.count; i++) {
+            stars.push({
+              x: Math.random(),
+              y: Math.random(),
+              r: layer.minR + Math.random() * (layer.maxR - layer.minR),
+              baseAlpha: layer.alpha * (0.6 + Math.random() * 0.4),
+              twinklePhase: Math.random() * Math.PI * 2,
+              twinkleSpeed: 0.008 + Math.random() * 0.015,
+              speedFactor: layer.speedFactor,
+              layerIdx,
+              tint: layerIdx === 2 && i % 7 === 0 ? '#a5f3fc' : layerIdx === 1 && i % 9 === 0 ? '#ddd6fe' : '#f5f5f7'
+            });
+          }
+        });
+
+        const resize = () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        let tick = 0;
+        const render = () => {
+          tick += 1;
+          const w = canvas.width;
+          const h = canvas.height;
+          ctx.clearRect(0, 0, w, h);
+
+          // Subtle atmospheric nebula gradients
+          const g1 = ctx.createRadialGradient(w * 0.2, h * 0.25, 20, w * 0.2, h * 0.25, w * 0.45);
+          g1.addColorStop(0, 'rgba(34, 211, 238, 0.045)');
+          g1.addColorStop(1, 'rgba(5, 5, 7, 0)');
+          ctx.fillStyle = g1;
+          ctx.fillRect(0, 0, w, h);
+
+          const g2 = ctx.createRadialGradient(w * 0.78, h * 0.7, 20, w * 0.78, h * 0.7, w * 0.45);
+          g2.addColorStop(0, 'rgba(168, 85, 247, 0.045)');
+          g2.addColorStop(1, 'rgba(5, 5, 7, 0)');
+          ctx.fillStyle = g2;
+          ctx.fillRect(0, 0, w, h);
+
+          const zoomScale = 0.85 + (zoom - 0.5) * 0.25;
+
+          for (let i = 0; i < stars.length; i++) {
+            const s = stars[i];
+            const driftX = reducedMotion ? 0 : Math.cos(tick * 0.0015 + s.twinklePhase) * 6 * s.speedFactor;
+            const driftY = reducedMotion ? 0 : Math.sin(tick * 0.0012 + s.twinklePhase) * 4 * s.speedFactor;
+
+            let sx = ((s.x * w + pan.x * s.speedFactor + driftX) % w + w) % w;
+            let sy = ((s.y * h + pan.y * s.speedFactor * 0.5 + driftY) % h + h) % h;
+
+            const twinkle = reducedMotion
+              ? 1
+              : 0.78 + 0.22 * Math.sin(tick * s.twinkleSpeed + s.twinklePhase);
+
+            ctx.beginPath();
+            ctx.arc(sx, sy, s.r * zoomScale, 0, Math.PI * 2);
+            ctx.fillStyle = s.tint;
+            ctx.globalAlpha = Math.max(0.08, Math.min(0.95, s.baseAlpha * twinkle));
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+
+          if (!reducedMotion) {
+            animId = requestAnimationFrame(render);
+          }
+        };
+
+        render();
+
+        return () => {
+          window.removeEventListener('resize', resize);
+          if (animId) cancelAnimationFrame(animId);
+        };
+      }, [pan.x, pan.y, zoom, reducedMotion]);
+
+      return (
+        <canvas
+          ref={canvasRef}
+          aria-hidden="true"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: 0
+          }}
+        />
+      );
+    }
+
+    function MechanismDiagram({ type, accentColor }) {
+      if (type === 'helix') {
+        return (
+          <svg viewBox="0 0 360 110" style={{ width: '100%', height: 'auto', borderRadius: 10, background: '#0b0b10', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <text x="14" y="20" fill="#9ca3af" fontSize="10" fontFamily="Inter, sans-serif">Antiparallel Sugar-Phosphate Strands & Complementary Base Pairs (A=T, G≡C)</text>
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+              const x = 36 + i * 38;
+              const y1 = 56 + Math.sin(i * 0.75) * 24;
+              const y2 = 56 - Math.sin(i * 0.75) * 24;
+              const pair = i % 2 === 0 ? 'A–T' : 'G–C';
+              return (
+                <g key={i}>
+                  <line x1={x} y1={y1} x2={x} y2={y2} stroke="rgba(255,255,255,0.22)" strokeWidth="1.5" strokeDasharray="2 2" />
+                  <circle cx={x} cy={y1} r="5" fill={accentColor} />
+                  <circle cx={x} cy={y2} r="5" fill="#a855f7" />
+                  <text x={x} y="100" textAnchor="middle" fill="#d1d5db" fontSize="9">{pair}</text>
+                </g>
+              );
+            })}
+          </svg>
+        );
+      }
+
+      if (type === 'restriction' || type === 'ligation') {
+        return (
+          <svg viewBox="0 0 360 105" style={{ width: '100%', height: 'auto', borderRadius: 10, background: '#0b0b10', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <text x="14" y="20" fill="#9ca3af" fontSize="10">Sequence Recognition → Sticky-End Cleavage → Ligase Joining</text>
+            <rect x="24" y="42" width="82" height="10" rx="4" fill={accentColor} />
+            <rect x="24" y="56" width="82" height="10" rx="4" fill="#3b82f6" />
+            <text x="65" y="84" textAnchor="middle" fill="#9ca3af" fontSize="9">Target DNA</text>
+            <path d="M124 54 L152 54" stroke="#f59e0b" strokeWidth="2" />
+            <polygon points="152,49 162,54 152,59" fill="#f59e0b" />
+            <rect x="176" y="42" width="44" height="10" rx="3" fill={accentColor} />
+            <rect x="176" y="56" width="30" height="10" rx="3" fill="#3b82f6" />
+            <rect x="234" y="42" width="32" height="10" rx="3" fill="#22c55e" />
+            <rect x="220" y="56" width="46" height="10" rx="3" fill="#a855f7" />
+            <text x="221" y="84" textAnchor="middle" fill="#e5e7eb" fontSize="9">Overhangs & Ligation</text>
+            <path d="M282 54 L308 54" stroke="#22d3ee" strokeWidth="2" />
+            <circle cx="324" cy="54" r="14" fill="none" stroke={accentColor} strokeWidth="2.5" />
+            <text x="324" y="84" textAnchor="middle" fill="#9ca3af" fontSize="9">Chimera</text>
+          </svg>
+        );
+      }
+
+      if (type === 'pcr') {
+        return (
+          <svg viewBox="0 0 360 105" style={{ width: '100%', height: 'auto', borderRadius: 10, background: '#0b0b10', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <text x="14" y="20" fill="#9ca3af" fontSize="10">PCR Thermal Cycling: Denature (~94–95°C) → Anneal → Extend</text>
+            <rect x="24" y="38" width="90" height="28" rx="6" fill="rgba(239,68,68,0.16)" stroke="rgba(239,68,68,0.45)" />
+            <text x="69" y="56" textAnchor="middle" fill="#fca5a5" fontSize="10" fontWeight="600">1. Denature</text>
+            <rect x="135" y="38" width="90" height="28" rx="6" fill="rgba(59,130,246,0.16)" stroke="rgba(59,130,246,0.45)" />
+            <text x="180" y="56" textAnchor="middle" fill="#93c5fd" fontSize="10" fontWeight="600">2. Anneal</text>
+            <rect x="246" y="38" width="90" height="28" rx="6" fill="rgba(34,211,238,0.16)" stroke="rgba(34,211,238,0.45)" />
+            <text x="291" y="56" textAnchor="middle" fill="#67e8f9" fontSize="10" fontWeight="600">3. Extend (2ⁿ)</text>
+            <text x="180" y="88" textAnchor="middle" fill="#9ca3af" fontSize="9">20 cycles = ~1,048,576 theoretical copies from 1 template molecule</text>
+          </svg>
+        );
+      }
+
+      return (
+        <svg viewBox="0 0 360 100" style={{ width: '100%', height: 'auto', borderRadius: 10, background: '#0b0b10', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <text x="14" y="20" fill="#9ca3af" fontSize="10">Molecular Mechanism Overview — Targeted Genetic Information Flow</text>
+          <rect x="20" y="36" width="96" height="32" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.14)" />
+          <text x="68" y="56" textAnchor="middle" fill="#f5f5f7" fontSize="10">Input / Target</text>
+          <line x1="116" y1="52" x2="136" y2="52" stroke={accentColor} strokeWidth="2" />
+          <rect x="136" y="36" width="96" height="32" rx="6" fill="rgba(34,211,238,0.12)" stroke={accentColor} />
+          <text x="184" y="56" textAnchor="middle" fill="#f5f5f7" fontSize="10">Biochemical Action</text>
+          <line x1="232" y1="52" x2="252" y2="52" stroke={accentColor} strokeWidth="2" />
+          <rect x="252" y="36" width="88" height="32" rx="6" fill="rgba(168,85,247,0.14)" stroke="#a855f7" />
+          <text x="296" y="56" textAnchor="middle" fill="#f5f5f7" fontSize="10">Genetic Outcome</text>
+        </svg>
+      );
+    }
+
+    function App() {
+      const worldWidth = 8300;
+      const worldHeight = 760;
+      const spineY = worldHeight / 2;
+
+      const [pan, setPan] = useState({ x: 80, y: 0 });
+      const [zoom, setZoom] = useState(0.82);
+      const [selectedId, setSelectedId] = useState(null);
+      const [hoveredId, setHoveredId] = useState(null);
+      const [activeEra, setActiveEra] = useState('all');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [reducedMotion, setReducedMotion] = useState(() => {
+        if (typeof window !== 'undefined' && window.matchMedia) {
+          return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        }
+        return false;
+      });
+      const [showGlossary, setShowGlossary] = useState(false);
+      const [showCompare, setShowCompare] = useState(false);
+      const [showSources, setShowSources] = useState(false);
+      const [compareIds, setCompareIds] = useState(['mendel-1865', 'doudna-charpentier-2012']);
+      const [loadedNotice, setLoadedNotice] = useState(true);
+
+      const isDraggingRef = useRef(false);
+      const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+      const touchRef = useRef({ dist: null, midX: 0, midY: 0 });
+      const animFrameRef = useRef(null);
+
+      useEffect(() => {
+        const timer = setTimeout(() => setLoadedNotice(false), 1400);
+        return () => clearTimeout(timer);
+      }, []);
+
+      const animateCameraTo = useCallback((targetPanX, targetPanY, targetZoom) => {
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        if (reducedMotion) {
+          setPan({ x: targetPanX, y: targetPanY });
+          setZoom(targetZoom);
+          return;
+        }
+
+        const startPan = { ...pan };
+        const startZoom = zoom;
+        const duration = 520;
+        const startTime = performance.now();
+
+        const step = (now) => {
+          const elapsed = now - startTime;
+          const t = Math.min(1, elapsed / duration);
+          const ease = 1 - Math.pow(1 - t, 3);
+
+          setPan({
+            x: startPan.x + (targetPanX - startPan.x) * ease,
+            y: startPan.y + (targetPanY - startPan.y) * ease
+          });
+          setZoom(startZoom + (targetZoom - startZoom) * ease);
+
+          if (t < 1) {
+            animFrameRef.current = requestAnimationFrame(step);
+          }
+        };
+
+        animFrameRef.current = requestAnimationFrame(step);
+      }, [pan, zoom, reducedMotion]);
+
+      const focusMilestone = useCallback((m, targetZoom = 1.0) => {
+        const viewW = window.innerWidth;
+        const viewH = window.innerHeight;
+        const nodeY = m.position === 'top' ? spineY - 140 : spineY + 140;
+        const panelOffset = viewW >= 900 ? -180 : 0;
+        const desiredPanX = viewW / 2 + panelOffset - m.x * targetZoom;
+        const desiredPanY = viewH / 2 - nodeY * targetZoom;
+        animateCameraTo(desiredPanX, desiredPanY, targetZoom);
+      }, [animateCameraTo, spineY]);
+
+      const handleSelectMilestone = useCallback((m) => {
+        setSelectedId(m.id);
+        focusMilestone(m, Math.max(0.95, Math.min(1.2, zoom)));
+      }, [focusMilestone, zoom]);
+
+      const handleResetView = useCallback(() => {
+        setSelectedId(null);
+        setActiveEra('all');
+        setSearchQuery('');
+        const viewH = window.innerHeight;
+        animateCameraTo(90, viewH / 2 - spineY * 0.82, 0.82);
+      }, [animateCameraTo, spineY]);
+
+      const handleFitAll = useCallback(() => {
+        const viewW = window.innerWidth;
+        const viewH = window.innerHeight;
+        const fitZoom = Math.max(0.22, Math.min(0.85, (viewW - 120) / worldWidth));
+        const offsetY = (viewH - worldHeight * fitZoom) / 2;
+        animateCameraTo(60, offsetY, fitZoom);
+      }, [animateCameraTo, worldWidth, worldHeight]);
+
+      const handleEraSelect = useCallback((eraId) => {
+        setActiveEra(eraId);
+        if (eraId === 'all') {
+          handleResetView();
+          return;
+        }
+        const firstInEra = MILESTONES.find((m) => m.eraId === eraId);
+        if (firstInEra) {
+          focusMilestone(firstInEra, 0.96);
+        }
+      }, [focusMilestone, handleResetView]);
+
+      // Escape key closes panel/modals
+      useEffect(() => {
+        const onKeyDown = (e) => {
+          if (e.key === 'Escape') {
+            setSelectedId(null);
+            setShowGlossary(false);
+            setShowCompare(false);
+            setShowSources(false);
+          }
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+      }, []);
+
+      // Wheel zoom centered at cursor
+      const handleWheel = useCallback((e) => {
+        e.preventDefault();
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        const factor = e.deltaY < 0 ? 1.1 : 0.9;
+        const nextZoom = Math.max(0.22, Math.min(2.2, zoom * factor));
+        const rect = e.currentTarget.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+
+        const worldX = (cx - pan.x) / zoom;
+        const worldY = (cy - pan.y) / zoom;
+
+        setZoom(nextZoom);
+        setPan({
+          x: cx - worldX * nextZoom,
+          y: cy - worldY * nextZoom
+        });
+      }, [pan.x, pan.y, zoom]);
+
+      const handleMouseDown = (e) => {
+        if (e.button !== 0) return;
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+        isDraggingRef.current = true;
+        dragStartRef.current = { x: e.clientX, y: e.clientY, panX: pan.x, panY: pan.y };
+      };
+
+      const handleMouseMove = (e) => {
+        if (!isDraggingRef.current) return;
+        const dx = e.clientX - dragStartRef.current.x;
+        const dy = e.clientY - dragStartRef.current.y;
+        setPan({
+          x: dragStartRef.current.panX + dx,
+          y: dragStartRef.current.panY + dy
+        });
+      };
+
+      const handleMouseUp = () => {
+        isDraggingRef.current = false;
+      };
+
+      // Touch pan & pinch-zoom
+      const handleTouchStart = (e) => {
+        if (e.touches.length === 1) {
+          isDraggingRef.current = true;
+          dragStartRef.current = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+            panX: pan.x,
+            panY: pan.y
+          };
+        } else if (e.touches.length === 2) {
+          isDraggingRef.current = false;
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          touchRef.current.dist = Math.hypot(dx, dy);
+          touchRef.current.midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          touchRef.current.midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        }
+      };
+
+      const handleTouchMove = (e) => {
+        if (e.touches.length === 1 && isDraggingRef.current) {
+          const dx = e.touches[0].clientX - dragStartRef.current.x;
+          const dy = e.touches[0].clientY - dragStartRef.current.y;
+          setPan({
+            x: dragStartRef.current.panX + dx,
+            y: dragStartRef.current.panY + dy
+          });
+        } else if (e.touches.length === 2 && touchRef.current.dist) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          const newDist = Math.hypot(dx, dy);
+          const scaleRatio = newDist / touchRef.current.dist;
+          const nextZoom = Math.max(0.22, Math.min(2.2, zoom * scaleRatio));
+          const mx = touchRef.current.midX;
+          const my = touchRef.current.midY;
+          const worldX = (mx - pan.x) / zoom;
+          const worldY = (my - pan.y) / zoom;
+
+          touchRef.current.dist = newDist;
+          setZoom(nextZoom);
+          setPan({
+            x: mx - worldX * nextZoom,
+            y: my - worldY * nextZoom
+          });
+        }
+      };
+
+      const handleTouchEnd = () => {
+        isDraggingRef.current = false;
+        touchRef.current.dist = null;
+      };
+
+      const searchMatches = useMemo(() => {
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return [];
+        return MILESTONES.filter((m) =>
+          m.title.toLowerCase().includes(q) ||
+          m.year.toLowerCase().includes(q) ||
+          m.pioneers.join(' ').toLowerCase().includes(q) ||
+          m.shortDesc.toLowerCase().includes(q)
+        );
+      }, [searchQuery]);
+
+      const selectedMilestone = useMemo(
+        () => MILESTONES.find((m) => m.id === selectedId) || null,
+        [selectedId]
+      );
+
+      const selectedIndex = useMemo(
+        () => MILESTONES.findIndex((m) => m.id === selectedId),
+        [selectedId]
+      );
+
+      const nextMilestone = useMemo(() => {
+        if (selectedIndex === -1) return MILESTONES[0];
+        return MILESTONES[(selectedIndex + 1) % MILESTONES.length];
+      }, [selectedIndex]);
+
+      const eraMap = useMemo(() => {
+        const map = {};
+        ERAS.forEach((e) => { map[e.id] = e; });
+        return map;
+      }, []);
+
+      const milestoneMap = useMemo(() => {
+        const map = {};
+        MILESTONES.forEach((m) => { map[m.id] = m; });
+        return map;
+      }, []);
+
+      const compareA = milestoneMap[compareIds[0]] || MILESTONES[0];
+      const compareB = milestoneMap[compareIds[1]] || MILESTONES[11];
+
+      return (
+        <div
+          style={{
+            position: 'relative',
+            width: '100vw',
+            height: '100vh',
+            overflow: 'hidden',
+            backgroundColor: '#050507',
+            opacity: loadedNotice ? 0.96 : 1,
+            transition: 'opacity 500ms ease'
+          }}
+        >
+          <StarfieldCanvas pan={pan} zoom={zoom} reducedMotion={reducedMotion} />
+
+          {/* Top Header & Navigation Bar */}
+          <header
+            style={{
+              position: 'fixed',
+              top: 14,
+              left: 14,
+              right: 14,
+              zIndex: 30,
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 10,
+              padding: '10px 14px',
+              borderRadius: 14,
+              backgroundColor: 'rgba(17, 17, 22, 0.82)',
+              backdropFilter: 'blur(14px)',
+              border: '1px solid rgba(255, 255, 255, 0.09)',
+              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.55)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 220 }}>
+              <div
+                style={{
+                  width: 10,
+                  height: 32,
+                  borderRadius: 999,
+                  background: 'linear-gradient(180deg, #22d3ee, #3b82f6, #a855f7, #f59e0b)'
+                }}
+              />
+              <div>
+                <h1 className="font-display" style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.04em', color: '#F5F5F7' }}>
+                  GENETIC ENGINEERING: THE PIONEERS
+                </h1>
+                <p style={{ fontSize: 11, color: '#9ca3af' }}>
+                  The Scientists Who Rewrote the Code of Life • 1865–2026+
+                </p>
+              </div>
+            </div>
+
+            {/* Era Filters */}
+            <nav aria-label="Historical Eras" style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => handleEraSelect('all')}
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  border: activeEra === 'all' ? '1px solid #22d3ee' : '1px solid rgba(255,255,255,0.1)',
+                  background: activeEra === 'all' ? 'rgba(34,211,238,0.15)' : 'rgba(255,255,255,0.03)',
+                  color: activeEra === 'all' ? '#67e8f9' : '#d1d5db'
+                }}
+              >
+                All Eras
+              </button>
+              {ERAS.map((era) => {
+                const isActive = activeEra === era.id;
+                return (
+                  <button
+                    key={era.id}
+                    type="button"
+                    onClick={() => handleEraSelect(era.id)}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: 8,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      border: isActive ? `1px solid ${era.color}` : '1px solid rgba(255,255,255,0.08)',
+                      background: isActive ? era.glow : 'rgba(255,255,255,0.02)',
+                      color: isActive ? '#F5F5F7' : '#9ca3af',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}
+                  >
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: era.color }} />
+                    {era.shortName}
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Search & Educational Tools */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search pioneer, year, CRISPR..."
+                aria-label="Search milestones and pioneers"
+                style={{
+                  width: 190,
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  color: '#F5F5F7',
+                  backgroundColor: '#09090d',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  outline: 'none'
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowGlossary(true)}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  background: 'rgba(255,255,255,0.05)',
+                  color: '#F5F5F7',
+                  border: '1px solid rgba(255,255,255,0.12)'
+                }}
+              >
+                Glossary
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCompare(true)}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  background: 'rgba(255,255,255,0.05)',
+                  color: '#F5F5F7',
+                  border: '1px solid rgba(255,255,255,0.12)'
+                }}
+              >
+                Compare
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSources(true)}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  background: 'rgba(255,255,255,0.05)',
+                  color: '#F5F5F7',
+                  border: '1px solid rgba(255,255,255,0.12)'
+                }}
+              >
+                Sources
+              </button>
+
+              {searchMatches.length > 0 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 38,
+                    left: 0,
+                    width: 280,
+                    maxHeight: 280,
+                    overflowY: 'auto',
+                    borderRadius: 10,
+                    backgroundColor: '#111116',
+                    border: '1px solid rgba(34, 211, 238, 0.35)',
+                    boxShadow: '0 16px 36px rgba(0,0,0,0.75)',
+                    zIndex: 50
+                  }}
+                >
+                  {searchMatches.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => {
+                        handleSelectMilestone(m);
+                        setSearchQuery('');
+                      }}
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '8px 12px',
+                        background: 'transparent',
+                        border: 'none',
+                        borderBottom: '1px solid rgba(255,255,255,0.06)',
+                        color: '#F5F5F7',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <div style={{ fontSize: 11, color: eraMap[m.eraId].color, fontWeight: 600 }}>{m.year}</div>
+                      <div style={{ fontSize: 12, fontWeight: 600 }}>{m.title}</div>
+                      <div style={{ fontSize: 11, color: '#9ca3af' }}>{m.pioneers.join(', ')}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </header>
+
+          {/* Interactive 2.5D Timeline Viewport */}
+          <main
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              cursor: isDraggingRef.current ? 'grabbing' : 'grab',
+              touchAction: 'none',
+              zIndex: 1
+            }}
+          >
+            <div
+              style={{
+                transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom})`,
+                transformOrigin: '0 0',
+                width: worldWidth,
+                height: worldHeight,
+                position: 'relative',
+                willChange: 'transform'
+              }}
+            >
+              {/* Era Segments Along Central Spine */}
+              {ERAS.map((era, idx) => {
+                const startX = idx * 1660 + 80;
+                const width = 1620;
+                return (
+                  <g key={era.id}>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: startX,
+                        top: spineY - 3,
+                        width,
+                        height: 6,
+                        borderRadius: 999,
+                        background: `linear-gradient(90deg, ${era.color}66, ${era.color}, ${era.color}66)`,
+                        boxShadow: `0 0 18px ${era.glow}`
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: startX + 12,
+                        top: spineY + 14,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        color: era.color,
+                        opacity: 0.85
+                      }}
+                    >
+                      ERA {idx + 1} • {era.name} ({era.period})
+                    </div>
+                  </g>
+                );
+              })}
+
+              {/* SVG Dependency Arcs & Vertical Node Connectors */}
+              <svg
+                width={worldWidth}
+                height={worldHeight}
+                style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'visible' }}
+              >
+                {CONNECTIONS.map((conn, i) => {
+                  const a = milestoneMap[conn.from];
+                  const b = milestoneMap[conn.to];
+                  if (!a || !b) return null;
+                  const ay = a.position === 'top' ? spineY - 135 : spineY + 135;
+                  const by = b.position === 'top' ? spineY - 135 : spineY + 135;
+                  const cx = (a.x + b.x) / 2;
+                  const cy = spineY + (i % 2 === 0 ? -195 : 195);
+                  const isHighlighted = selectedId === a.id || selectedId === b.id || hoveredId === a.id || hoveredId === b.id;
+
+                  return (
+                    <path
+                      key={`${conn.from}-${conn.to}`}
+                      d={`M ${a.x} ${ay} Q ${cx} ${cy} ${b.x} ${by}`}
+                      fill="none"
+                      stroke={isHighlighted ? '#22d3ee' : 'rgba(255, 255, 255, 0.14)'}
+                      strokeWidth={isHighlighted ? 2.2 : 1.2}
+                      strokeDasharray={isHighlighted ? 'none' : '4 5'}
+                    />
+                  );
+                })}
+
+                {MILESTONES.map((m) => {
+                  const nodeY = m.position === 'top' ? spineY - 135 : spineY + 135;
+                  const era = eraMap[m.eraId];
+                  const isActive = selectedId === m.id || hoveredId === m.id;
+                  return (
+                    <line
+                      key={`stem-${m.id}`}
+                      x1={m.x}
+                      y1={spineY}
+                      x2={m.x}
+                      y2={nodeY}
+                      stroke={isActive ? era.color : 'rgba(245, 245, 247, 0.28)'}
+                      strokeWidth={isActive ? 2.4 : 1.3}
+                    />
+                  );
+                })}
+              </svg>
+
+              {/* Milestone Portrait Nodes */}
+              {MILESTONES.map((m) => {
+                const era = eraMap[m.eraId];
+                const isTop = m.position === 'top';
+                const nodeY = isTop ? spineY - 135 : spineY + 135;
+                const isSelected = selectedId === m.id;
+                const isHovered = hoveredId === m.id;
+                const isDimmed = (selectedId && !isSelected) || (activeEra !== 'all' && m.eraId !== activeEra);
+                const scaleVal = isHovered ? 1.1 : isSelected ? 1.07 : 1;
+                const translateZ = isHovered || isSelected ? 18 : 0;
+
+                return (
+                  <div
+                    key={m.id}
+                    onMouseEnter={() => setHoveredId(m.id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectMilestone(m);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${m.year} — ${m.title}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSelectMilestone(m);
+                      }
+                    }}
+                    style={{
+                      position: 'absolute',
+                      left: m.x,
+                      top: nodeY,
+                      transform: `translate(-50%, -50%) translateY(${-translateZ * 0.35}px) scale(${scaleVal})`,
+                      transition: 'transform 240ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease',
+                      opacity: isDimmed ? 0.42 : 1,
+                      display: 'flex',
+                      flexDirection: isTop ? 'column-reverse' : 'column',
+                      alignItems: 'center',
+                      gap: 10,
+                      width: 230,
+                      cursor: 'pointer',
+                      zIndex: isSelected ? 20 : isHovered ? 15 : 5
+                    }}
+                  >
+                    {/* Circular Pioneer Portrait Badge */}
+                    <div
+                      style={{
+                        width: 78,
+                        height: 78,
+                        borderRadius: '50%',
+                        background: `radial-gradient(circle at 30% 30%, ${era.color}33, #111116 72%)`,
+                        border: `2px solid ${isSelected || isHovered ? era.color : 'rgba(255,255,255,0.22)'}`,
+                        boxShadow: isSelected || isHovered
+                          ? `0 0 0 5px ${era.glow}, 0 14px 28px rgba(0,0,0,0.75)`
+                          : '0 8px 20px rgba(0,0,0,0.6)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}
+                    >
+                      <span
+                        className="font-display"
+                        style={{
+                          fontSize: 18,
+                          fontWeight: 700,
+                          letterSpacing: '0.04em',
+                          color: '#F5F5F7'
+                        }}
+                      >
+                        {m.monogram}
+                      </span>
+                    </div>
+
+                    {/* Node Label Card */}
+                    <div
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: 12,
+                        backgroundColor: isSelected ? 'rgba(20, 20, 28, 0.96)' : 'rgba(17, 17, 22, 0.86)',
+                        border: isSelected ? `1px solid ${era.color}` : '1px solid rgba(255,255,255,0.1)',
+                        backdropFilter: 'blur(10px)',
+                        textAlign: 'center',
+                        boxShadow: '0 10px 24px rgba(0,0,0,0.5)'
+                      }}
+                    >
+                      <div style={{ fontSize: 11, fontWeight: 700, color: era.color }}>{m.year}</div>
+                      <div
+                        className="font-display"
+                        style={{
+                          fontSize: isHovered || isSelected ? 14 : 13,
+                          fontWeight: 700,
+                          color: '#F5F5F7',
+                          marginTop: 2,
+                          lineHeight: 1.25
+                        }}
+                      >
+                        {m.title}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#cbd5e1', marginTop: 3, fontWeight: 500 }}>
+                        {m.pioneers.join(' • ')}
+                      </div>
+                      <p style={{ fontSize: 11, color: '#9ca3af', marginTop: 5, lineHeight: 1.35 }}>
+                        {m.shortDesc}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </main>
+
+          {/* Bottom-Left Overview Strip & Camera Controls */}
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 16,
+              left: 16,
+              zIndex: 25,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+              maxWidth: 440
+            }}
+          >
+            <div
+              style={{
+                padding: '10px 12px',
+                borderRadius: 12,
+                backgroundColor: 'rgba(17, 17, 22, 0.84)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.09)'
+              }}
+            >
+              <p style={{ fontSize: 11, color: '#d1d5db', lineHeight: 1.45 }}>
+                <strong style={{ color: '#22d3ee' }}>Timeline Overview:</strong> Genetic engineering emerged through cumulative breakthroughs across many scientists—from Mendelian inheritance and DNA structure to restriction enzymes, cloning, sequencing, PCR, and CRISPR. Drag to pan, scroll to zoom, or click a node.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.min(2.2, Number((z * 1.18).toFixed(2))))}
+                aria-label="Zoom In"
+                style={{ padding: '7px 11px', borderRadius: 8, background: '#111116', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}
+              >
+                +
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.max(0.22, Number((z / 1.18).toFixed(2))))}
+                aria-label="Zoom Out"
+                style={{ padding: '7px 11px', borderRadius: 8, background: '#111116', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}
+              >
+                −
+              </button>
+              <button
+                type="button"
+                onClick={handleResetView}
+                style={{ padding: '7px 11px', borderRadius: 8, background: '#111116', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={handleFitAll}
+                style={{ padding: '7px 11px', borderRadius: 8, background: '#111116', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}
+              >
+                Fit All
+              </button>
+              {selectedMilestone && (
+                <button
+                  type="button"
+                  onClick={() => focusMilestone(selectedMilestone, 1.05)}
+                  style={{ padding: '7px 11px', borderRadius: 8, background: 'rgba(34,211,238,0.14)', color: '#67e8f9', border: '1px solid rgba(34,211,238,0.35)', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}
+                >
+                  Selected
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setReducedMotion((m) => !m)}
+                style={{ padding: '7px 11px', borderRadius: 8, background: '#111116', color: reducedMotion ? '#f59e0b' : '#9ca3af', border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}
+              >
+                Motion: {reducedMotion ? 'Off' : 'On'}
+              </button>
+              <span style={{ alignSelf: 'center', fontSize: 11, color: '#9ca3af', marginLeft: 4 }}>
+                {Math.round(zoom * 100)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom-Right Interactive Minimap */}
+          <div
+            aria-label="Timeline Minimap"
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const ratioX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+              const targetWorldX = ratioX * worldWidth;
+              const m = MILESTONES.reduce((prev, curr) =>
+                Math.abs(curr.x - targetWorldX) < Math.abs(prev.x - targetWorldX) ? curr : prev
+              );
+              focusMilestone(m, zoom);
+            }}
+            style={{
+              position: 'fixed',
+              bottom: 16,
+              right: selectedMilestone ? 456 : 16,
+              width: 210,
+              height: 56,
+              borderRadius: 10,
+              backgroundColor: 'rgba(17, 17, 22, 0.88)',
+              border: '1px solid rgba(255,255,255,0.14)',
+              backdropFilter: 'blur(10px)',
+              zIndex: 25,
+              cursor: 'pointer',
+              overflow: 'hidden',
+              transition: 'right 280ms ease'
+            }}
+          >
+            <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', height: 2, background: 'rgba(255,255,255,0.2)' }} />
+            {MILESTONES.map((m) => (
+              <div
+                key={`mm-${m.id}`}
+                style={{
+                  position: 'absolute',
+                  left: `${(m.x / worldWidth) * 100}%`,
+                  top: m.position === 'top' ? '26%' : '74%',
+                  width: 5,
+                  height: 5,
+                  borderRadius: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  backgroundColor: selectedId === m.id ? '#22d3ee' : eraMap[m.eraId].color
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Pioneer Information Drawer */}
+          {selectedMilestone && (
+            <aside
+              aria-label="Pioneer Profile Panel"
+              className="selectable-text"
+              style={{
+                position: 'fixed',
+                top: 74,
+                right: 14,
+                bottom: 14,
+                width: 'min(430px, calc(100vw - 28px))',
+                borderRadius: 16,
+                backgroundColor: 'rgba(17, 17, 22, 0.95)',
+                backdropFilter: 'blur(18px)',
+                border: `1px solid ${eraMap[selectedMilestone.eraId].color}66`,
+                boxShadow: '0 24px 60px rgba(0, 0, 0, 0.82)',
+                zIndex: 40,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden'
+              }}
+            >
+              <div
+                style={{
+                  padding: '16px 18px',
+                  borderBottom: '1px solid rgba(255,255,255,0.09)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  gap: 12
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: eraMap[selectedMilestone.eraId].color, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {selectedMilestone.year} • {eraMap[selectedMilestone.eraId].name}
+                  </div>
+                  <h2 className="font-display" style={{ fontSize: 18, fontWeight: 700, color: '#F5F5F7', marginTop: 3 }}>
+                    {selectedMilestone.title}
+                  </h2>
+                  <div style={{ fontSize: 12, color: '#cbd5e1', marginTop: 4 }}>
+                    {selectedMilestone.pioneers.join(', ')}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedId(null)}
+                  aria-label="Close panel"
+                  style={{
+                    padding: '5px 10px',
+                    borderRadius: 8,
+                    background: 'rgba(255,255,255,0.06)',
+                    color: '#F5F5F7',
+                    border: '1px solid rgba(255,255,255,0.14)',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    fontWeight: 600
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ padding: '16px 18px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                <section>
+                  <h3 style={{ fontSize: 12, fontWeight: 700, color: '#22d3ee', textTransform: 'uppercase', marginBottom: 6 }}>A. Identity</h3>
+                  <div style={{ fontSize: 12, color: '#d1d5db', lineHeight: 1.55 }}>
+                    <div><strong>Full Name / Team:</strong> {selectedMilestone.identity.fullName}</div>
+                    <div><strong>Dates:</strong> {selectedMilestone.identity.lifespan}</div>
+                    <div><strong>Nationality:</strong> {selectedMilestone.identity.nationality}</div>
+                    <div><strong>Role & Field:</strong> {selectedMilestone.identity.role}</div>
+                    <div><strong>Institutions:</strong> {selectedMilestone.identity.institutions.join(', ')}</div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 style={{ fontSize: 12, fontWeight: 700, color: '#22d3ee', textTransform: 'uppercase', marginBottom: 6 }}>B. Biography</h3>
+                  <p style={{ fontSize: 13, color: '#e5e7eb', lineHeight: 1.6 }}>{selectedMilestone.biography}</p>
+                </section>
+
+                <section>
+                  <h3 style={{ fontSize: 12, fontWeight: 700, color: '#22d3ee', textTransform: 'uppercase', marginBottom: 6 }}>C. Scientific Contribution</h3>
+                  <p style={{ fontSize: 13, color: '#e5e7eb', lineHeight: 1.6 }}>{selectedMilestone.contribution}</p>
+                </section>
+
+                <section>
+                  <h3 style={{ fontSize: 12, fontWeight: 700, color: '#22d3ee', textTransform: 'uppercase', marginBottom: 6 }}>D. How the Discovery Worked</h3>
+                  <p style={{ fontSize: 13, color: '#e5e7eb', lineHeight: 1.6, marginBottom: 10 }}>{selectedMilestone.howItWorked}</p>
+                  <MechanismDiagram type={selectedMilestone.mechanismType} accentColor={eraMap[selectedMilestone.eraId].color} />
+                </section>
+
+                <section>
+                  <h3 style={{ fontSize: 12, fontWeight: 700, color: '#22d3ee', textTransform: 'uppercase', marginBottom: 6 }}>E. Importance to Genetic Engineering</h3>
+                  <p style={{ fontSize: 13, color: '#e5e7eb', lineHeight: 1.6 }}>{selectedMilestone.importance}</p>
+                </section>
+
+                <section>
+                  <h3 style={{ fontSize: 12, fontWeight: 700, color: '#22d3ee', textTransform: 'uppercase', marginBottom: 6 }}>F. Additional Context</h3>
+                  <div style={{ fontSize: 12, color: '#d1d5db', lineHeight: 1.55, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div><strong>Recognition:</strong> {selectedMilestone.additionalInfo.awards.join('; ')}</div>
+                    <div><strong>Key Publications:</strong> {selectedMilestone.additionalInfo.publications.join('; ')}</div>
+                    <div><strong>Collaborators:</strong> {selectedMilestone.additionalInfo.collaborators.join(', ')}</div>
+                    <div><strong>Historical & Ethical Notes:</strong> {selectedMilestone.additionalInfo.controversies.join(' ')}</div>
+                    <div><strong>Historical Arc:</strong> {selectedMilestone.additionalInfo.connections.join(' ')}</div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 style={{ fontSize: 12, fontWeight: 700, color: '#22d3ee', textTransform: 'uppercase', marginBottom: 6 }}>G. Credible Sources</h3>
+                  <p style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6 }}>
+                    Verified historical milestones and peer-reviewed or institutional references are distinguished from broader synthesis.
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {selectedMilestone.sources.map((src) => (
+                      <a
+                        key={src.url + src.label}
+                        href={src.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: 12, color: '#67e8f9', textDecoration: 'underline' }}
+                      >
+                        {src.label} ↗
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              </div>
+
+              <div style={{ padding: '12px 18px', borderTop: '1px solid rgba(255,255,255,0.09)', backgroundColor: '#0e0e13' }}>
+                <button
+                  type="button"
+                  onClick={() => handleSelectMilestone(nextMilestone)}
+                  style={{
+                    width: '100%',
+                    padding: '11px 14px',
+                    borderRadius: 10,
+                    background: 'linear-gradient(90deg, #0891b2, #2563eb)',
+                    color: '#F5F5F7',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: 12,
+                    letterSpacing: '0.04em',
+                    cursor: 'pointer'
+                  }}
+                >
+                  EXPLORE NEXT DISCOVERY → {nextMilestone.year} ({nextMilestone.title})
+                </button>
+              </div>
+            </aside>
+          )}
+
+          {/* Glossary Modal */}
+          {showGlossary && (
+            <div
+              onClick={() => setShowGlossary(false)}
+              style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.72)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="selectable-text"
+                style={{ width: 'min(640px, 100%)', maxHeight: '82vh', overflowY: 'auto', borderRadius: 16, backgroundColor: '#111116', border: '1px solid rgba(255,255,255,0.14)', padding: 20 }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <h2 className="font-display" style={{ fontSize: 18, fontWeight: 700 }}>Scientific Glossary</h2>
+                  <button type="button" onClick={() => setShowGlossary(false)} style={{ padding: '4px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.08)', color: '#F5F5F7', border: 'none', cursor: 'pointer' }}>Close</button>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {GLOSSARY.map((item) => (
+                    <div key={item.term} style={{ padding: 12, borderRadius: 10, backgroundColor: '#0b0b10', border: '1px solid rgba(255,255,255,0.07)' }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#22d3ee' }}>{item.term}</div>
+                      <div style={{ fontSize: 12, color: '#d1d5db', marginTop: 4, lineHeight: 1.5 }}>{item.def}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Pioneer Comparison Modal */}
+          {showCompare && (
+            <div
+              onClick={() => setShowCompare(false)}
+              style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.72)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="selectable-text"
+                style={{ width: 'min(780px, 100%)', maxHeight: '84vh', overflowY: 'auto', borderRadius: 16, backgroundColor: '#111116', border: '1px solid rgba(255,255,255,0.14)', padding: 20 }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <h2 className="font-display" style={{ fontSize: 18, fontWeight: 700 }}>Compare Two Milestones</h2>
+                  <button type="button" onClick={() => setShowCompare(false)} style={{ padding: '4px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.08)', color: '#F5F5F7', border: 'none', cursor: 'pointer' }}>Close</button>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginBottom: 16 }}>
+                  <select
+                    value={compareIds[0]}
+                    onChange={(e) => setCompareIds([e.target.value, compareIds[1]])}
+                    style={{ padding: 8, borderRadius: 8, background: '#09090d', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.16)' }}
+                  >
+                    {MILESTONES.map((m) => <option key={m.id} value={m.id}>{m.year} — {m.title}</option>)}
+                  </select>
+                  <select
+                    value={compareIds[1]}
+                    onChange={(e) => setCompareIds([compareIds[0], e.target.value])}
+                    style={{ padding: 8, borderRadius: 8, background: '#09090d', color: '#F5F5F7', border: '1px solid rgba(255,255,255,0.16)' }}
+                  >
+                    {MILESTONES.map((m) => <option key={m.id} value={m.id}>{m.year} — {m.title}</option>)}
+                  </select>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
+                  {[compareA, compareB].map((item) => (
+                    <div key={item.id} style={{ padding: 14, borderRadius: 12, backgroundColor: '#0b0b10', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: eraMap[item.eraId].color }}>{item.year} • {eraMap[item.eraId].shortName}</div>
+                      <h3 className="font-display" style={{ fontSize: 15, fontWeight: 700, marginTop: 4 }}>{item.title}</h3>
+                      <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{item.pioneers.join(', ')}</div>
+                      <p style={{ fontSize: 12, color: '#d1d5db', marginTop: 10, lineHeight: 1.55 }}><strong>Contribution:</strong> {item.contribution}</p>
+                      <p style={{ fontSize: 12, color: '#d1d5db', marginTop: 8, lineHeight: 1.55 }}><strong>Significance:</strong> {item.importance}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sources & Attribution Modal */}
+          {showSources && (
+            <div
+              onClick={() => setShowSources(false)}
+              style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.72)', zIndex: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="selectable-text"
+                style={{ width: 'min(620px, 100%)', maxHeight: '80vh', overflowY: 'auto', borderRadius: 16, backgroundColor: '#111116', border: '1px solid rgba(255,255,255,0.14)', padding: 20 }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <h2 className="font-display" style={{ fontSize: 18, fontWeight: 700 }}>Research Sources & Attribution</h2>
+                  <button type="button" onClick={() => setShowSources(false)} style={{ padding: '4px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.08)', color: '#F5F5F7', border: 'none', cursor: 'pointer' }}>Close</button>
+                </div>
+                <p style={{ fontSize: 12, color: '#d1d5db', lineHeight: 1.6, marginBottom: 12 }}>
+                  Historical milestones and attributions in this interactive archive are grounded in authoritative scientific and archival references including the National Human Genome Research Institute (NHGRI), Nobel Prize archives, NIH/PubMed, Smithsonian Institution, and U.S. FDA resources. Portrait badges use typographic monograms with era-coded rings so no broken or unverified images appear offline or across networks.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12 }}>
+                  <a href="https://www.genome.gov/" target="_blank" rel="noopener noreferrer" style={{ color: '#67e8f9' }}>National Human Genome Research Institute (genome.gov) ↗</a>
+                  <a href="https://www.nobelprize.org/" target="_blank" rel="noopener noreferrer" style={{ color: '#67e8f9' }}>The Nobel Prize Archive (nobelprize.org) ↗</a>
+                  <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener noreferrer" style={{ color: '#67e8f9' }}>National Library of Medicine / PubMed (pubmed.ncbi.nlm.nih.gov) ↗</a>
+                  <a href="https://www.si.edu/" target="_blank" rel="noopener noreferrer" style={{ color: '#67e8f9' }}>Smithsonian Institution (si.edu) ↗</a>
+                  <a href="https://www.fda.gov/" target="_blank" rel="noopener noreferrer" style={{ color: '#67e8f9' }}>U.S. Food and Drug Administration (fda.gov) ↗</a>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

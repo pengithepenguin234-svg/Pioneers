@@ -1,2 +1,0 @@
-# Pioneers
-Study this
